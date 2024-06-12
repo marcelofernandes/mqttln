@@ -43,10 +43,12 @@ def mqttln_stop():
 
 def mqttln_start():
     async def _start_mqtt_client():
-        await asyncio.sleep(3)
-        mqtt_client.connect_to_mqtt_broker()
-        await asyncio.sleep(3)
-        mqtt_client.start_mqtt_client()
+        extension_active = await db.fetch_one("SELECT 1 FROM database.extensions WHERE extension = 'mqttln' AND active = 1")
+        if extension_active:
+            await asyncio.sleep(3)
+            mqtt_client.connect_to_mqtt_broker()
+            await asyncio.sleep(3)
+            mqtt_client.start_mqtt_client()
     
     task = create_permanent_unique_task("ext_task_connect_mqtt", _start_mqtt_client)
     scheduled_tasks.append(task)

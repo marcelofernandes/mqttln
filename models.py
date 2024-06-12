@@ -67,6 +67,7 @@ class MQTTClient():
         self.client.on_connect = on_connect
         self.client.on_message = on_message
         self.client.connect(self.broker, self.port, 60)
+        self.connected = True
     
     def start_mqtt_client(self):
         wst = Thread(target=self.client.loop_start)
@@ -74,5 +75,7 @@ class MQTTClient():
         wst.start()
 
     def disconnect_to_mqtt_broker(self):
-        self.client.loop_stop()
-        self.client.disconnect()
+        if self.connected is True:
+            self.client.loop_stop()
+            self.client.disconnect()
+            self.connected = False
