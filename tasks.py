@@ -11,7 +11,7 @@ from .mqtt_client import test_client
 
 async def wait_for_paid_invoices():
     invoice_queue = asyncio.Queue()
-    register_invoice_listener(invoice_queue, "mysuperplugin")
+    register_invoice_listener(invoice_queue, "mqttln")
 
     while True:
         payment = await invoice_queue.get()
@@ -20,8 +20,8 @@ async def wait_for_paid_invoices():
 
 async def on_invoice_paid(payment: Payment) -> None:
     if (
-        payment.extra.get("tag") == "mysuperplugin"
-    ):  # Will grab any payment with the tag "mysuperplugin"
+        payment.extra.get("tag") == "mqttln"
+    ):  # Will grab any payment with the tag "mqttln"
         logger.debug(payment)
 
 broker = "172.21.240.91"

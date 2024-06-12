@@ -1,20 +1,20 @@
 {
   "name": "Payments extension",
   "short_description": "Make payments",
-  "tile": "/mysuperplugin/static/bitcoin-extension.png",
+  "tile": "/mqttln/static/bitcoin-extension.png",
   "min_lnbits_version": "0.12.6",
   "images": [
     {
-      "uri": "https://raw.githubusercontent.com/marcelofernandes/mysuperplugin/main/static/1.png"
+      "uri": "https://raw.githubusercontent.com/marcelofernandes/mqttln/main/static/1.png"
     },
     {
-      "uri": "https://raw.githubusercontent.com/marcelofernandes/mysuperplugin/main/static/2.png"
+      "uri": "https://raw.githubusercontent.com/marcelofernandes/mqttln/main/static/2.png"
     },
     {
-      "uri": "https://raw.githubusercontent.com/lnmarcelofernandesbits/mysuperplugin/main/static/3.png"
+      "uri": "https://raw.githubusercontent.com/lnmarcelofernandesbits/mqttln/main/static/3.png"
     }
   ],
-  "description_md": "https://raw.githubusercontent.com/marcelofernandes/mysuperplugin/main/description.md",
-  "terms_and_conditions_md": "https://raw.githubusercontent.com/marcelofernandes/mysuperplugin/main/toc.md",
+  "description_md": "https://raw.githubusercontent.com/marcelofernandes/mqttln/main/description.md",
+  "terms_and_conditions_md": "https://raw.githubusercontent.com/marcelofernandes/mqttln/main/toc.md",
   "license": "MIT"
 }

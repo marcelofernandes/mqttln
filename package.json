@@ -1,5 +1,5 @@
 {
-  "name": "mysuperplugin",
+  "name": "mqttln",
   "version": "1.0.0",
   "description": "<small>For more about LNBits extension check [this tutorial](https://github.com/lnbits/lnbits/wiki/LNbits-Extensions)</small>",
   "main": "index.js",

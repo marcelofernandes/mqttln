@@ -12,18 +12,18 @@ from .models import Example
 
 # views_api.py is for you API endpoints that could be hit by another service
 
-mysuperplugin_ext_api = APIRouter(
+mqttln_ext_api = APIRouter(
     prefix="/api/v1",
-    tags=["mysuperplugin"],
+    tags=["mqttln"],
 )
 
-@mysuperplugin_ext_api.get("/test/{mysuperplugin_data}", description="Example API endpoint")
-async def api_mysuperplugin(mysuperplugin_data: str) -> Example:
+@mqttln_ext_api.get("/test/{mqttln_data}", description="Example API endpoint")
+async def api_mqttln(mqttln_data: str) -> Example:
     # Do some python things and return the data
-    return Example(id="1", wallet=mysuperplugin_data)
+    return Example(id="1", wallet=mqttln_data)
 
 
-@mysuperplugin_ext_api.get("/vetted", description="Get the vetted extension readme")
+@mqttln_ext_api.get("/vetted", description="Get the vetted extension readme")
 async def api_get_vetted(wallet: WalletTypeInfo = Depends(get_key_type)):
     try:
         async with httpx.AsyncClient() as client:
@@ -36,12 +36,12 @@ async def api_get_vetted(wallet: WalletTypeInfo = Depends(get_key_type)):
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
         ) from e
 
-@mysuperplugin_ext_api.get("/health-check", description="Health check")
+@mqttln_ext_api.get("/health-check", description="Health check")
 async def api_get_health_check():
     print("Ok")
     return "Ok"
 
-@mysuperplugin_ext_api.get("/payment", description="Makes a payment")
+@mqttln_ext_api.get("/payment", description="Makes a payment")
 async def api_get_payment():
     try:
         async with httpx.AsyncClient() as client:

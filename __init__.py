@@ -5,28 +5,28 @@ from lnbits.db import Database
 from lnbits.tasks import create_permanent_unique_task
 from loguru import logger
 
-from .views import mysuperplugin_ext_generic
-from .views_api import mysuperplugin_ext_api
+from .views import mqttln_ext_generic
+from .views_api import mqttln_ext_api
 
-db = Database("ext_mysuperplugin")
+db = Database("ext_mqttln")
 
 from .mqtt_client import MQTTClient
 mqtt_client: MQTTClient = MQTTClient()
 
 scheduled_tasks: list[asyncio.Task] = []
 
-mysuperplugin_ext: APIRouter = APIRouter(prefix="/mysuperplugin", tags=["mysuperplugin"])
-mysuperplugin_ext.include_router(mysuperplugin_ext_generic)
-mysuperplugin_ext.include_router(mysuperplugin_ext_api)
+mqttln_ext: APIRouter = APIRouter(prefix="/mqttln", tags=["mqttln"])
+mqttln_ext.include_router(mqttln_ext_generic)
+mqttln_ext.include_router(mqttln_ext_api)
 
-mysuperplugin_static_files = [
+mqttln_static_files = [
     {
-        "path": "/mysuperplugin/static",
-        "name": "mysuperplugin_static",
+        "path": "/mqttln/static",
+        "name": "mqttln_static",
     }
 ]
 
-def mysuperplugin_stop():
+def mqttln_stop():
     for task in scheduled_tasks:
         try:
             task.cancel()
@@ -34,7 +34,7 @@ def mysuperplugin_stop():
         except Exception as ex:
             logger.warning(ex)
 
-def mysuperplugin_start():
+def mqttln_start():
     async def _start_mqtt_client():
         await asyncio.sleep(5)
         mqtt_client.connect_to_mqtt_broker()
