@@ -14,6 +14,7 @@ class MQTTClient:
         self.topic_payment = "topic/payment"
         self.topic_device = "topic/device"
         self.client = None
+        self.app_host = "3592-177-84-220-120"
 
     def _ws_handlers(self):
             def on_connect(client, userdata, flags, rc):
@@ -28,14 +29,14 @@ class MQTTClient:
                 try:
                     async with httpx.AsyncClient() as client:
                         scan = await client.get(
-                            "https://3592-177-84-220-120.ngrok-free.app/api/v1/lnurlscan/marcelo@3592-177-84-220-120.ngrok-free.app",
+                            f"https://{self.app_host}.ngrok-free.app/api/v1/lnurlscan/marcelo@{self.app_host}.ngrok-free.app",
                             headers= {
                                 "accept": "application/json, text/plain, */*", "x-api-key": "deedc1af97344b47a2b33005c96b6a3a"
                             }
                         )
                         scanJson = scan.json()
                         await client.post(
-                            "https://3592-177-84-220-120.ngrok-free.app/api/v1/payments/lnurl",
+                            f"https://{self.app_host}.ngrok-free.app/api/v1/payments/lnurl",
                             headers = {
                                 "accept": "application/json, text/plain, */*", "x-api-key": "deedc1af97344b47a2b33005c96b6a3a"
                             },

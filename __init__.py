@@ -10,7 +10,7 @@ from .views_api import mqttln_ext_api
 
 db = Database("ext_mqttln")
 
-from .mqtt_client import MQTTClient
+from .models import MQTTClient
 mqtt_client: MQTTClient = MQTTClient()
 
 scheduled_tasks: list[asyncio.Task] = []
