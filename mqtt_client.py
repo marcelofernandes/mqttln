@@ -28,14 +28,14 @@ class MQTTClient:
                 try:
                     async with httpx.AsyncClient() as client:
                         scan = await client.get(
-                            "https://791b-177-84-220-114.ngrok-free.app/api/v1/lnurlscan/marcelo@791b-177-84-220-114.ngrok-free.app",
+                            "https://3592-177-84-220-120.ngrok-free.app/api/v1/lnurlscan/marcelo@3592-177-84-220-120.ngrok-free.app",
                             headers= {
                                 "accept": "application/json, text/plain, */*", "x-api-key": "deedc1af97344b47a2b33005c96b6a3a"
                             }
                         )
                         scanJson = scan.json()
                         await client.post(
-                            "https://791b-177-84-220-114.ngrok-free.app/api/v1/payments/lnurl",
+                            "https://3592-177-84-220-120.ngrok-free.app/api/v1/payments/lnurl",
                             headers = {
                                 "accept": "application/json, text/plain, */*", "x-api-key": "deedc1af97344b47a2b33005c96b6a3a"
                             },
