@@ -1,0 +1,77 @@
+{% extends "base.html" %} {% from "macros.jinja" import window_vars with context
+%} {% block page %}
+
+<q-card flat>
+  <q-card-section>
+    <div class="text-h5 q-mb-md">
+      Payment extension
+    </div>
+
+    <q-card unelevated flat>
+      <div class="text-h6">Payments</div>
+
+          <div>
+            <p>
+              makes a payment
+            </p>
+
+            <p>
+              Click here to make a payment
+              <q-btn
+                size="sm"
+                color="primary"
+                @click="getPayment"
+                >here</q-btn
+              > <q-tooltip>payment</q-tooltip>
+            </p>
+          </div>
+    </q-card>
+  </q-card-section>
+</q-card>
+{% endblock %} {% block scripts %} {{ window_vars(user) }}
+
+<script>
+  new Vue({
+    el: '#vue',
+    mixins: [windowMixin],
+    data: function () {
+      return {
+        ///// Declare models/variables /////
+        protocol: window.location.protocol,
+        location: '//' + window.location.hostname,
+      }
+    },
+    ///// Where functions live /////
+    methods: {
+      getPayment: function () {
+        dismissPaymentMsg = this.$q.notify({
+          timeout: 0,
+          message: 'Processing payment...'
+        })
+        LNbits.api
+          .request(
+            'GET',
+            '/mysuperplugin/api/v1/mqtt',
+            '8662f429b2cd4ca3a01ea2b6ed001979'
+          )
+          .catch(err => {
+            LNbits.utils.notifyApiError(err)
+            dismissPaymentMsg();
+          })
+          .then(response => {
+            if (response.data.payment_hash) {
+              dismissPaymentMsg();
+              // window.location.reload();
+            }
+          })
+        return;
+        
+      },
+    },
+    ///// To run on startup /////
+    created: function () {
+      self = this
+    }
+  })
+</script>
+{% endblock %}
