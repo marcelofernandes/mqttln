@@ -43,7 +43,7 @@ def mqttln_stop():
 
 def mqttln_start():
     async def _start_mqtt_client():
-        extension_active = await db.fetch_one("SELECT 1 FROM database.extensions WHERE extension = 'mqttln' AND active = 1")
+        extension_active = await db.fetchone("SELECT * FROM database.extensions WHERE extension = 'mqttln' AND active = 1")
         if extension_active:
             await asyncio.sleep(3)
             mqtt_client.connect_to_mqtt_broker()
