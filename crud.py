@@ -1,5 +1,4 @@
 from . import db
-from loguru import logger
 
 async def create(device_id: str) -> None:
     await db.execute(

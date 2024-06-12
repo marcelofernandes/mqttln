@@ -4,24 +4,11 @@ import httpx
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from lnbits.decorators import WalletTypeInfo, get_key_type
-# from lnbits.core.services import pay_invoice
-import paho.mqtt.client as mqtt # type: ignore
-from pydantic import BaseModel # type: ignore
-
-from .models import Example
-
-# views_api.py is for you API endpoints that could be hit by another service
 
 mqttln_ext_api = APIRouter(
     prefix="/api/v1",
     tags=["mqttln"],
 )
-
-@mqttln_ext_api.get("/test/{mqttln_data}", description="Example API endpoint")
-async def api_mqttln(mqttln_data: str) -> Example:
-    # Do some python things and return the data
-    return Example(id="1", wallet=mqttln_data)
-
 
 @mqttln_ext_api.get("/vetted", description="Get the vetted extension readme")
 async def api_get_vetted(wallet: WalletTypeInfo = Depends(get_key_type)):

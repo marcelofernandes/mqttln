@@ -1,4 +1,3 @@
-# from pydantic import BaseModel
 import paho.mqtt.client as mqtt
 from loguru import logger
 from threading import Thread
