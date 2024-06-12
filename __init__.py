@@ -11,7 +11,14 @@ from .views_api import mqttln_ext_api
 db = Database("ext_mqttln")
 
 from .models import MQTTClient
-mqtt_client: MQTTClient = MQTTClient()
+
+broker = "172.21.240.91"
+port = 1883
+topic_payment = "topic/payment"
+topic_device = "topic/device"
+app_host = "3592-177-84-220-120"
+
+mqtt_client: MQTTClient = MQTTClient(broker, port, topic_payment, topic_device, app_host)
 
 scheduled_tasks: list[asyncio.Task] = []
 
