@@ -16,7 +16,7 @@ broker = "172.21.240.91"
 port = 1883
 topic_payment = "topic/payment"
 topic_device = "topic/device"
-app_host = "b0a9-177-84-220-120"
+app_host = "a24c-177-84-220-120"
 
 mqtt_client: MQTTClient = MQTTClient(broker, port, topic_payment, topic_device, app_host)
 
