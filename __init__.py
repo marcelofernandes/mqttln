@@ -8,6 +8,8 @@ from loguru import logger
 from .views import mqttln_ext_generic
 from .views_api import mqttln_ext_api
 
+from lnbits.core.crud import create_wallet
+
 db = Database("ext_mqttln")
 
 from .models import MQTTClient
@@ -43,6 +45,7 @@ def mqttln_stop():
 
 def mqttln_start():
     async def _start_mqtt_client():
+        await create_wallet(user_id="2e557181046a423394c5dbd853009459", wallet_name="New wallet created")
         database = Database("database")
         extension_active = await database.fetchone("SELECT * FROM extensions WHERE extension = 'mqttln' AND active = 1")
         if extension_active:
