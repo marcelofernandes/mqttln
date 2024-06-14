@@ -2,7 +2,7 @@ import asyncio
 
 from fastapi import APIRouter
 from lnbits.db import Database
-from lnbits.tasks import create_permanent_unique_task, register_task
+from lnbits.tasks import create_permanent_unique_task
 from loguru import logger
 
 from .views import mqttln_ext_generic
@@ -16,7 +16,7 @@ broker = "172.21.240.91"
 port = 1883
 topic_payment = "topic/payment"
 topic_device = "topic/device"
-app_host = "3592-177-84-220-120"
+app_host = "b0a9-177-84-220-120"
 
 mqtt_client: MQTTClient = MQTTClient(broker, port, topic_payment, topic_device, app_host)
 
@@ -53,7 +53,3 @@ def mqttln_start():
     
     task = create_permanent_unique_task("ext_task_connect_mqtt", _start_mqtt_client)
     scheduled_tasks.append(task)
-
-@register_task("ext_task_connect_mqtt")
-async def check_and_start_mqtt():
-    await mqttln_start()
