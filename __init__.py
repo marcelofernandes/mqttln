@@ -14,11 +14,11 @@ from .models import MQTTClient
 
 broker = "172.21.240.91"
 port = 1883
-topic_payment = "topic/payment"
+topic_supplier = "topic/supplier"
 topic_device = "topic/device"
 app_host = "b0a9-177-84-220-120"
 
-mqtt_client: MQTTClient = MQTTClient(broker, port, topic_payment, topic_device, app_host)
+mqtt_client: MQTTClient = MQTTClient(broker, port, topic_supplier, topic_device, app_host)
 
 scheduled_tasks: list[asyncio.Task] = []
 
