@@ -8,10 +8,10 @@ import httpx
 from fastapi.exceptions import HTTPException
 
 class MQTTClient():
-    def __init__(self, broker, port, topic_supplier, topic_device, app_host):
+    def __init__(self, broker, port, topic_payment, topic_device, app_host):
         self.broker = broker
         self.port = port
-        self.topic_supplier = topic_supplier
+        self.topic_payment = topic_payment
         self.topic_device = topic_device
         self.app_host = app_host
         self.client = None
@@ -19,7 +19,7 @@ class MQTTClient():
     def _ws_handlers(self):
             def on_connect(client, userdata, flags, rc):
                 logger.info("Conectado com código de resultado: " + str(rc))
-                client.subscribe(self.topic_supplier)
+                client.subscribe(self.topic_payment)
 
             async def handle_message(msg):
                 msg_decoded = msg.payload.decode()
@@ -54,9 +54,10 @@ class MQTTClient():
                     ) from e
 
             def on_message(client, userdata, msg):
-                message = f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}"
-                asyncio.run(handle_message(msg))
-                logger.info(message)
+                if msg.topic == self.topic_payment:
+                    message = f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}"
+                    asyncio.run(handle_message(msg))
+                    logger.info(message)
 
             return on_connect, on_message
 
