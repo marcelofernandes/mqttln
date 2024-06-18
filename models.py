@@ -48,7 +48,7 @@ class MQTTClient():
                             }
                         )
                         await create(msg_decoded)
-                        self.client.publish(self.topic_device, f"Device {msg_decoded} liberado")
+                        self.client.publish(self.topic_device, msg_decoded)
                 except Exception as e:
                     raise HTTPException(
                         status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
