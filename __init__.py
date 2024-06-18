@@ -18,7 +18,7 @@ broker = "172.21.240.91"
 port = 1883
 topic_payment = "topic/payment"
 topic_device = "topic/device"
-app_host = "a24c-177-84-220-120"
+app_host = "be3b-177-84-220-115"
 
 mqtt_client: MQTTClient = MQTTClient(broker, port, topic_payment, topic_device, app_host)
 
@@ -45,7 +45,7 @@ def mqttln_stop():
 
 def mqttln_start():
     async def _start_mqtt_client():
-        await create_wallet(user_id="2e557181046a423394c5dbd853009459", wallet_name="New wallet created")
+        # await create_wallet(user_id="2e557181046a423394c5dbd853009459", wallet_name="New wallet created")
         database = Database("database")
         extension_active = await database.fetchone("SELECT * FROM extensions WHERE extension = 'mqttln' AND active = 1")
         if extension_active:
