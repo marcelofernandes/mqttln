@@ -41,7 +41,7 @@ class MQTTClient():
                             },
                             json = {
                                 # "amount": scanJson['minSendable'],
-                                "amount": 99.0,
+                                "amount": 199,
                                 "callback": scanJson['callback'],
                                 "comment": "",
                                 "description": scanJson['description'],
