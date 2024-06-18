@@ -32,14 +32,16 @@ class MQTTClient():
                             }
                         )
                         scanJson = scan.json()
+                        print(scanJson['minSendable'])
+                        print(scanJson)
                         await client.post(
                             f"https://{self.app_host}.ngrok-free.app/api/v1/payments/lnurl",
                             headers = {
                                 "accept": "application/json, text/plain, */*", "x-api-key": "deedc1af97344b47a2b33005c96b6a3a"
                             },
                             json = {
-                                "amount": scanJson['minSendable'],
-                                "amount": 99,
+                                # "amount": scanJson['minSendable'],
+                                "amount": 99.0,
                                 "callback": scanJson['callback'],
                                 "comment": "",
                                 "description": scanJson['description'],
