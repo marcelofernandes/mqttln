@@ -62,7 +62,7 @@ class MQTTClient():
             return on_connect, on_message
 
     def connect_to_mqtt_broker(self):
-        logger.debug(f"Connecting to MQTT broker")
+        logger.info(f"Connecting to MQTT broker")
         on_connect, on_message = self._ws_handlers()
         self.client = mqtt.Client()
         self.client.on_connect = on_connect
