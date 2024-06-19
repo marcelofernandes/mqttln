@@ -14,6 +14,8 @@ class MQTTClient():
         self.topic_payment = topic_payment
         self.topic_device = topic_device
         self.app_host = app_host
+        self.username = "admin"
+        self.password = "admin"
         self.client = None
 
     def _ws_handlers(self):
@@ -68,6 +70,7 @@ class MQTTClient():
         self.client = mqtt.Client()
         self.client.on_connect = on_connect
         self.client.on_message = on_message
+        self.client.username_pw_set(self.username, self.password)
         self.client.connect(self.broker, self.port, 60)
         self.connected = True
     
