@@ -14,8 +14,8 @@ class MQTTClient():
         self.topic_payment = topic_payment
         self.topic_device = topic_device
         self.app_host = app_host
-        self.username = "admin"
-        self.password = "admin"
+        self.username = "rw"
+        self.password = "readwrite"
         self.client = None
 
     def _ws_handlers(self):
