@@ -14,6 +14,10 @@ db = Database("ext_mqttln")
 
 from .models import MQTTClient
 
+import os
+path = os.environ["LNBITS_PORT"]
+print(path)
+
 broker = "172.21.240.91"
 port = 1883
 topic_payment = "topic/payment"
