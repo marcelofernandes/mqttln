@@ -15,14 +15,12 @@ db = Database("ext_mqttln")
 from .models import MQTTClient
 
 import os
-path = os.environ["LNBITS_PORT"]
-print(path)
 
 broker = "172.21.240.91"
 port = 1883
 topic_payment = "topic/payment"
 topic_device = "topic/device"
-app_host = "e698-177-84-220-115"
+app_host = os.environ.get("NGROK_HOST", "localhost")
 
 mqtt_client: MQTTClient = MQTTClient(broker, port, topic_payment, topic_device, app_host)
 
