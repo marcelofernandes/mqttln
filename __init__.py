@@ -16,8 +16,10 @@ from .models import MQTTClient
 
 import os
 
-broker = "172.21.240.91"
-port = 1883
+# broker = "172.21.240.91"
+# port = 1883
+broker = "test.mosquitto.org"
+port = 1884
 topic_payment = "topic/payment"
 topic_device = "topic/device"
 app_host = os.environ.get("NGROK_HOST", "localhost")
