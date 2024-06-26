@@ -24,33 +24,13 @@ class MQTTClient():
                 client.subscribe(self.wallet_topic)
 
             async def handle_message(msg):
-                msg_decoded = msg.payload.decode()
                 try:
-                    async with httpx.AsyncClient() as client:
-                        scan = await client.get(
-                            f"https://{self.app_host}.ngrok-free.app/api/v1/lnurlscan/marcelo@{self.app_host}.ngrok-free.app",
-                            headers= {
-                                "accept": "application/json, text/plain, */*", "x-api-key": "deedc1af97344b47a2b33005c96b6a3a"
-                            }
-                        )
-                        scanJson = scan.json()
-                        await client.post(
-                            f"https://{self.app_host}.ngrok-free.app/api/v1/payments/lnurl",
-                            headers = {
-                                "accept": "application/json, text/plain, */*", "x-api-key": "deedc1af97344b47a2b33005c96b6a3a"
-                            },
-                            json = {
-                                # "amount": scanJson['minSendable'],
-                                "amount": 100000,
-                                "callback": scanJson['callback'],
-                                "comment": "",
-                                "description": scanJson['description'],
-                                "description_hash": scanJson['description_hash'],
-                                "unit": 'sat'
-                            }
-                        )
-                        await create(msg_decoded)
-                        self.client.publish(self.device_wallet_topic, msg_decoded)
+                    # await create(msg_decoded)
+                    # Create Wallet for Device
+                    # Create LNaddress for Wallet created
+                    # Publish LNaddress to Supplier
+                    # self.client.publish(self.device_wallet_topic, msg)
+                    logger.info(f"Mensagem recebida: {msg}")
                 except Exception as e:
                     raise HTTPException(
                         status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
@@ -58,10 +38,10 @@ class MQTTClient():
 
             def on_message(client, userdata, msg):
                 logger.info(f"Mensagem recebida: {msg.payload.decode()}")
-                if msg.topic == self.wallet_topic:
-                    message = f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}"
-                    asyncio.run(handle_message(msg))
-                    logger.info(message)
+                if msg.topic.startswith("device"):
+                    logger.info(f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}")
+                    msg_decoded = msg.payload.decode()
+                    asyncio.run(handle_message(msg_decoded))
 
             return on_connect, on_message
 
