@@ -57,6 +57,7 @@ class MQTTClient():
                     ) from e
 
             def on_message(client, userdata, msg):
+                logger.info(f"Mensagem recebida: {msg.payload.decode()}")
                 if msg.topic == self.wallet_topic:
                     message = f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}"
                     asyncio.run(handle_message(msg))
@@ -65,7 +66,7 @@ class MQTTClient():
             return on_connect, on_message
 
     def connect_to_mqtt_broker(self):
-        logger.info(f"Connecting to MQTT broker")
+        logger.info("Conectando ao Broker MQTT")
         on_connect, on_message = self._ws_handlers()
         self.client = mqtt.Client()
         self.client.on_connect = on_connect
