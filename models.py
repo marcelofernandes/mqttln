@@ -23,25 +23,23 @@ class MQTTClient():
                 logger.info("Conectado com código de resultado: " + str(rc))
                 client.subscribe(self.wallet_topic)
 
-            async def handle_message(msg):
+            async def handle_message(code):
                 try:
                     # await create(msg_decoded)
                     # Create Wallet for Device
                     # Create LNaddress for Wallet created
                     # Publish LNaddress to Supplier
                     # self.client.publish(self.device_wallet_topic, msg)
-                    logger.info(f"Mensagem recebida: {msg}")
+                    logger.info(f"Código recebido: {code}")
                 except Exception as e:
                     raise HTTPException(
                         status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
                     ) from e
 
             def on_message(client, userdata, msg):
-                logger.info(f"Mensagem recebida: {msg.payload.decode()} no tópico: {msg.topic}")
                 if msg.topic.startswith("wallet"):
-                    logger.info(f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}")
-                    msg_decoded = msg.payload.decode()
-                    asyncio.run(handle_message(msg_decoded))
+                    code = msg.topic.split("/", 1)
+                    asyncio.run(handle_message(code))
 
             return on_connect, on_message
 
