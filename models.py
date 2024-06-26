@@ -38,8 +38,8 @@ class MQTTClient():
 
             def on_message(client, userdata, msg):
                 if msg.topic.startswith("wallet/"):
-                    code = msg.topic.split("/", 1)
-                    if len(code[1]) > 0:
+                    code = msg.topic.split("/", 1)[1]
+                    if len(code) > 0:
                         asyncio.run(handle_message(code))
 
             return on_connect, on_message
