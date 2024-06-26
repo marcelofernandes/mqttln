@@ -37,8 +37,8 @@ class MQTTClient():
                     ) from e
 
             def on_message(client, userdata, msg):
-                logger.info(f"Mensagem recebida: {msg.payload.decode()}")
-                if msg.topic.startswith("device"):
+                logger.info(f"Mensagem recebida: {msg.payload.decode()} no tópico: {msg.topic}")
+                if msg.topic.startswith("wallet"):
                     logger.info(f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}")
                     msg_decoded = msg.payload.decode()
                     asyncio.run(handle_message(msg_decoded))
