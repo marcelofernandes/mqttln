@@ -24,7 +24,7 @@ port = 1884
 wallet_topic = "wallet/+"
 device_wallet_topic = "device/wallet"
 # device_payment_topic = "device/payment"
-app_host = os.environ.get("NGROK_HOST", "localhost")
+app_host = os.environ.get("NGROK_HOST", "81ae-177-84-220-115")
 
 mqtt_client: MQTTClient = MQTTClient(broker, port, wallet_topic, device_wallet_topic, app_host)
 
