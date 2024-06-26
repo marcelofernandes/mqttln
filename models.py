@@ -1,18 +1,18 @@
-import paho.mqtt.client as mqtt
-from loguru import logger
+import paho.mqtt.client as mqtt # type: ignore
+from loguru import logger # type: ignore
 from threading import Thread
 from .crud import (create)
 import asyncio
 from http import HTTPStatus
-import httpx
-from fastapi.exceptions import HTTPException
+import httpx # type: ignore
+from fastapi.exceptions import HTTPException # type: ignore
 
 class MQTTClient():
-    def __init__(self, broker, port, topic_payment, topic_device, app_host):
+    def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
         self.broker = broker
         self.port = port
-        self.topic_payment = topic_payment
-        self.topic_device = topic_device
+        self.wallet_topic = wallet_topic
+        self.device_wallet_topic = device_wallet_topic
         self.app_host = app_host
         self.username = "rw"
         self.password = "readwrite"
@@ -21,7 +21,7 @@ class MQTTClient():
     def _ws_handlers(self):
             def on_connect(client, userdata, flags, rc):
                 logger.info("Conectado com código de resultado: " + str(rc))
-                client.subscribe(self.topic_payment)
+                client.subscribe(self.wallet_topic)
 
             async def handle_message(msg):
                 msg_decoded = msg.payload.decode()
@@ -50,14 +50,14 @@ class MQTTClient():
                             }
                         )
                         await create(msg_decoded)
-                        self.client.publish(self.topic_device, msg_decoded)
+                        self.client.publish(self.device_wallet_topic, msg_decoded)
                 except Exception as e:
                     raise HTTPException(
                         status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
                     ) from e
 
             def on_message(client, userdata, msg):
-                if msg.topic == self.topic_payment:
+                if msg.topic == self.wallet_topic:
                     message = f"Mensagem recebida: {msg.payload.decode()} no tópico {msg.topic}"
                     asyncio.run(handle_message(msg))
                     logger.info(message)

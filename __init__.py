@@ -18,13 +18,15 @@ import os
 
 # broker = "172.21.240.91"
 # port = 1883
+
 broker = "test.mosquitto.org"
 port = 1884
-topic_payment = "topic/payment"
-topic_device = "topic/device"
+wallet_topic = "wallet/+"
+device_wallet_topic = "device/wallet"
+# device_payment_topic = "device/payment"
 app_host = os.environ.get("NGROK_HOST", "localhost")
 
-mqtt_client: MQTTClient = MQTTClient(broker, port, topic_payment, topic_device, app_host)
+mqtt_client: MQTTClient = MQTTClient(broker, port, wallet_topic, device_wallet_topic, app_host)
 
 scheduled_tasks: list[asyncio.Task] = []
 

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import HTMLResponse
-from lnbits.core.models import User
-from lnbits.decorators import check_user_exists
-from lnbits.helpers import template_renderer
+from fastapi import APIRouter, Depends, Request # type: ignore
+from fastapi.responses import HTMLResponse # type: ignore
+from lnbits.core.models import User # type: ignore
+from lnbits.decorators import check_user_exists # type: ignore
+from lnbits.helpers import template_renderer # type: ignore
 
 mqttln_ext_generic = APIRouter(tags=["mqttln"])
 
