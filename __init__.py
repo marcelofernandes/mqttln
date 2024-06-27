@@ -8,7 +8,7 @@ from loguru import logger
 from .views import mqttln_ext_generic
 from .views_api import mqttln_ext_api
 
-from lnbits.core.crud import create_wallet
+# from lnbits.core.crud import create_wallet
 
 db = Database("ext_mqttln")
 
