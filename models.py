@@ -27,7 +27,7 @@ class MQTTClient():
                 try:
                     # await create(msg_decoded)
                     
-                    user_id = "c219d4aa83e94e2f92bd301041db970e"
+                    user_id = "2e557181046a423394c5dbd853009459"
                     await create_wallet(user_id = user_id, wallet_name = code)
                     
                     # Create LNaddress for Wallet created
