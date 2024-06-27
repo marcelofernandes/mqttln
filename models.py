@@ -1,12 +1,10 @@
 import paho.mqtt.client as mqtt # type: ignore
 from loguru import logger # type: ignore
 from threading import Thread
-# from .wallet_db import (get_wallet)
 import asyncio
 from http import HTTPStatus
 from fastapi.exceptions import HTTPException # type: ignore
-# from lnbits.core.crud import get_wallets
-# from lnbits.core.crud import create_wallet # type: ignore
+from lnbits.core.crud import create_wallet # type: ignore
 from lnbits.db import Database
 
 class MQTTClient():
@@ -30,8 +28,8 @@ class MQTTClient():
                     user_id = "2e557181046a423394c5dbd853009459"
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
-                    print(wallet)
-                    # await create_wallet(user_id = user_id, wallet_name = code)
+                    if not wallet:
+                        await create_wallet(user_id = user_id, wallet_name = code)
                     
                     # Create LNaddress for Wallet created
                     # Publish LNaddress to Supplier
