@@ -1,11 +1,11 @@
 import paho.mqtt.client as mqtt # type: ignore
 from loguru import logger # type: ignore
 from threading import Thread
-from .crud import (create)
+# from .crud import (create)
 import asyncio
 from http import HTTPStatus
-import httpx # type: ignore
 from fastapi.exceptions import HTTPException # type: ignore
+from lnbits.core.crud import create_wallet # type: ignore
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
@@ -26,7 +26,10 @@ class MQTTClient():
             async def handle_message(code):
                 try:
                     # await create(msg_decoded)
-                    # Create Wallet for Device
+                    
+                    user_id = "c219d4aa83e94e2f92bd301041db970e"
+                    await create_wallet(user_id = user_id, wallet_name = code)
+                    
                     # Create LNaddress for Wallet created
                     # Publish LNaddress to Supplier
                     # self.client.publish(self.device_wallet_topic, msg)
