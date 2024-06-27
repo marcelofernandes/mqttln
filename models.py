@@ -5,7 +5,8 @@ from threading import Thread
 import asyncio
 from http import HTTPStatus
 from fastapi.exceptions import HTTPException # type: ignore
-from lnbits.core.crud import (create_wallet, get_wallets) # type: ignore
+from lnbits.core.crud import create_wallet # type: ignore
+from lnbits.core.crud import get_wallets # type: ignore
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
