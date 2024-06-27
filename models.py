@@ -27,12 +27,9 @@ class MQTTClient():
 
             async def handle_message(code):
                 try:
-                    # await create(msg_decoded)
-                    
-                    # user_id = "2e557181046a423394c5dbd853009459"
+                    user_id = "2e557181046a423394c5dbd853009459"
                     database = Database("database")
-                    wallet = await database.fetchone("SELECT * FROM wallets WHERE name = 'vhCITW1_d_3EYjAGAT01x' AND user = '2e557181046a423394c5dbd853009459'")
-                    # wallet = await get_wallet("vhCITW1_d_3EYjAGAT01x", "2e557181046a423394c5dbd853009459")
+                    wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     print(wallet)
                     # await create_wallet(user_id = user_id, wallet_name = code)
                     
