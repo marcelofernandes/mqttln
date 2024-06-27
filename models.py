@@ -6,6 +6,7 @@ from http import HTTPStatus
 from fastapi.exceptions import HTTPException # type: ignore
 from lnbits.core.crud import create_wallet # type: ignore
 from lnbits.db import Database
+import json
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
@@ -23,9 +24,9 @@ class MQTTClient():
                 logger.info("Conectado com código de resultado: " + str(rc))
                 client.subscribe(self.wallet_topic)
 
-            async def handle_message(code):
+            async def handle_message(code, user_id):
                 try:
-                    user_id = "2e557181046a423394c5dbd853009459"
+                    # user_id = "2e557181046a423394c5dbd853009459"
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     if not wallet:
@@ -43,8 +44,11 @@ class MQTTClient():
             def on_message(client, userdata, msg):
                 if msg.topic.startswith("wallet/"):
                     code = msg.topic.split("/", 1)[1]
+                    json_payload = msg.payload.decode()
+                    payload = json.loads(json_payload)
+                    user_id = payload['id']
                     if len(code) > 0:
-                        asyncio.run(handle_message(code))
+                        asyncio.run(handle_message(code, user_id))
 
             return on_connect, on_message
 
