@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt # type: ignore
 from loguru import logger # type: ignore
 from threading import Thread
-from .wallet import (get_wallet)
+from .wallet_db import (get_wallet)
 import asyncio
 from http import HTTPStatus
 from fastapi.exceptions import HTTPException # type: ignore
@@ -28,7 +28,7 @@ class MQTTClient():
                 try:
                     # await create(msg_decoded)
                     
-                    user_id = "2e557181046a423394c5dbd853009459"
+                    # user_id = "2e557181046a423394c5dbd853009459"
                     wallet = await get_wallet("vhCITW1_d_3EYjAGAT01x", "2e557181046a423394c5dbd853009459")
                     print(wallet)
                     # await create_wallet(user_id = user_id, wallet_name = code)
