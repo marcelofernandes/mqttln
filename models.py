@@ -5,7 +5,7 @@ import asyncio
 from http import HTTPStatus
 from fastapi.exceptions import HTTPException # type: ignore
 from lnbits.core.crud import create_wallet # type: ignore
-from lnbits.db import Database
+from lnbits.db import Database # type: ignore
 import json
 
 class MQTTClient():
@@ -26,7 +26,6 @@ class MQTTClient():
 
             async def handle_message(code, user_id):
                 try:
-                    # user_id = "2e557181046a423394c5dbd853009459"
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     if not wallet:
