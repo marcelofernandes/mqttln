@@ -45,13 +45,12 @@ class MQTTClient():
                             zaps=False
                         )
                         
-                        pay_lik = await create_pay_link(
+                        await create_pay_link(
                             wallet_id=wallet.id,
                             data=pay_link_data
                         )
-                        logger.info(f"Pay link: {pay_lik}")
-                        # payload = json.dumps({"lnaddress": f"{device_id}"})
-                        # self.client.publish(self.device_wallet_topic, payload=payload, qos=0, retain=False)
+                        
+                        self.client.publish(self.device_wallet_topic, payload="", qos=0, retain=False)
                         logger.info(f"Código enviado: {code}")
                     
                 except Exception as e:
