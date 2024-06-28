@@ -18,8 +18,7 @@ async def on_invoice_paid(payment: Payment, mqttClient):
         return
     code = payment.extra.get("lnaddress").split("@")[0]
     balance = payment.amount / 1000
-    logger.info(f"Pagamento realizado para o código: {code}")
     device_payment_topic = f"device/payment/{code}"
-    payload = json.dumps({"balance": f"{balance}"})
+    payload = json.dumps({"balance": balance})
     mqttClient.client.publish(device_payment_topic, payload=payload, qos=0, retain=False)
     logger.info("Mensagem enviada.")
