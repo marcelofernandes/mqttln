@@ -34,7 +34,7 @@ class MQTTClient():
                         wallet = await create_wallet(user_id = user_id, wallet_name = code)
                     
                     address = await get_address_data(code)
-                    if address.username != code:
+                    if address is not None and hasattr(address, 'username') and address.username != code:
                         pay_link_data = CreatePayLinkData(
                             wallet=wallet.id,
                             comment_chars=0,
