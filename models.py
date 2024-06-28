@@ -32,7 +32,7 @@ class MQTTClient():
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     if not wallet:
                         wallet = await create_wallet(user_id = user_id, wallet_name = code)
-                        print(wallet)
+                        logger.info(f"Nova Carteira: {wallet}")
                     
                     pay_link_data = CreatePayLinkData(
                         wallet=wallet.id,
@@ -43,6 +43,7 @@ class MQTTClient():
                         username=code,
                         zaps=False
                     )
+                    logger.info("Pay link criado")
                     await create_pay_link(
                         wallet_id=wallet.id,
                         data=pay_link_data
