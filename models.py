@@ -28,14 +28,12 @@ class MQTTClient():
 
             async def handle_message(code, user_id):
                 try:
-                    logger.info(f"Mensagem recebida!")
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     if not wallet:
                         await create_wallet(user_id = user_id, wallet_name = code)
                     
-                    lnaddress_request = CreatePayLinkData(
-                        wallet="c5ae2eafd92e4d3e9830ef4b4b54ce03",
+                    pay_link_data = CreatePayLinkData(
                         comment_chars=0,
                         description="desc",
                         min=1,
@@ -43,18 +41,10 @@ class MQTTClient():
                         username="marcelo",
                         zaps=False
                     )
-                    # link = await create_pay_link(lnaddress_request)
-                    # print(link)
-                    lnaddress_link = await create_pay_link(
+                    await create_pay_link(
                         wallet_id="c5ae2eafd92e4d3e9830ef4b4b54ce03",
-                        data=lnaddress_request
-                        # username="marcelo",
-                        # description="desc",
-                        # min_sendable=1,
-                        # max_sendable=100,
-                        # comment_chars=0,
+                        data=pay_link_data
                     )
-                    print(lnaddress_link)
 
                     # Create LNaddress for Wallet created
                     # Publish LNaddress to Supplier
