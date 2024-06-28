@@ -33,8 +33,9 @@ class MQTTClient():
                     if not wallet:
                         wallet = await create_wallet(user_id = user_id, wallet_name = code)
                     
-                    user_name = await get_address_data(code['username'])
-                    logger.info(f"Username: {user_name}")
+                    address = await get_address_data(code)
+                    logger.info(f"Username: {address['username']}")
+                    # Address: id='Pw2iRw' wallet='dea31cb01d104dedb305d81e15aa4ce5' description='Link de pagamento' min=1.0 served_meta=1 served_pr=1 username='zx24firnhm7iplg' zaps=False domain=None webhook_url=None webhook_headers=None webhook_body=None success_text=None success_url=None currency=None comment_chars=0 max=100.0 fiat_base_multiplier=100
 
                     pay_link_data = CreatePayLinkData(
                         wallet=wallet.id,
