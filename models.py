@@ -7,8 +7,8 @@ from fastapi.exceptions import HTTPException # type: ignore
 from lnbits.core.crud import create_wallet # type: ignore
 from lnbits.db import Database # type: ignore
 import json
-from lnbits.extensions.lnurlp.models import CreatePayLinkData
-from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data
+from lnbits.extensions.lnurlp.models import CreatePayLinkData # type: ignore
+from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # type: ignore
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):

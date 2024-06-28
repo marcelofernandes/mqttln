@@ -7,6 +7,7 @@ from loguru import logger
 
 from .views import mqttln_ext_generic
 from .views_api import mqttln_ext_api
+from .tasks import wait_for_paid_invoices
 
 # from lnbits.core.crud import create_wallet
 
@@ -61,3 +62,5 @@ def mqttln_start():
     
     task = create_permanent_unique_task("ext_task_connect_mqtt", _start_mqtt_client)
     scheduled_tasks.append(task)
+    task2 = create_permanent_unique_task("ext_task_paid_invoices", wait_for_paid_invoices)
+    scheduled_tasks.append(task2)
