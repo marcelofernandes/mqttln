@@ -33,8 +33,8 @@ class MQTTClient():
                     if not wallet:
                         wallet = await create_wallet(user_id = user_id, wallet_name = code)
                     
-                    address = await get_address_data(code)
-                    logger.info(f"Address: {address}")
+                    user_name = await get_address_data(code['username'])
+                    logger.info(f"Username: {user_name}")
 
                     pay_link_data = CreatePayLinkData(
                         wallet=wallet.id,
