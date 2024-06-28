@@ -40,7 +40,7 @@ class MQTTClient():
                             comment_chars=0,
                             description="Link de pagamento",
                             min=1,
-                            max=100,
+                            max=100000000,
                             username=code,
                             zaps=False
                         )
