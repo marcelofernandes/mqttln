@@ -62,5 +62,5 @@ def mqttln_start():
     
     task = create_permanent_unique_task("ext_task_connect_mqtt", _start_mqtt_client)
     scheduled_tasks.append(task)
-    task2 = create_permanent_unique_task("ext_task_paid_invoices", wait_for_paid_invoices)
+    task2 = create_permanent_unique_task("mqttln", wait_for_paid_invoices)
     scheduled_tasks.append(task2)
