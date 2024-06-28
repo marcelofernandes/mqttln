@@ -46,15 +46,11 @@ class MQTTClient():
                     # link = await create_pay_link(lnaddress_request)
                     lnaddress_link = await create_pay_link(
                         wallet_id="c5ae2eafd92e4d3e9830ef4b4b54ce03",
-                        name="marcelo",
+                        username="marcelo",
                         description="desc",
                         min_sendable=1,
                         max_sendable=100,
                         comment_chars=0,
-                        webhook=None,
-                        success_text=None,
-                        success_url=None,
-                        currency="sat"
                     )
                     print(lnaddress_link)
 
