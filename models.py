@@ -7,6 +7,8 @@ from fastapi.exceptions import HTTPException # type: ignore
 from lnbits.core.crud import create_wallet # type: ignore
 from lnbits.db import Database # type: ignore
 import json
+from lnbits.extensions.lnurlp.models import CreatePayLinkData
+from lnbits.extensions.lnurlp.crud import create_pay_link
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
@@ -31,6 +33,18 @@ class MQTTClient():
                     if not wallet:
                         await create_wallet(user_id = user_id, wallet_name = code)
                     
+                    lnaddress_request = CreatePayLinkData(
+                        wallet="c5ae2eafd92e4d3e9830ef4b4b54ce03",
+                        comment_chars=0,
+                        description="desc",
+                        min=1,
+                        max=100,
+                        username="marcelo",
+                        zaps=False
+                    )
+                    link = await create_pay_link(lnaddress_request)
+                    print(link)
+
                     # Create LNaddress for Wallet created
                     # Publish LNaddress to Supplier
                     # self.client.publish(self.device_wallet_topic, msg)
