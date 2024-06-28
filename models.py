@@ -8,7 +8,7 @@ from lnbits.core.crud import create_wallet # type: ignore
 from lnbits.db import Database # type: ignore
 import json
 from lnbits.extensions.lnurlp.models import CreatePayLinkData
-from lnbits.extensions.lnurlp.crud import create_pay_link
+from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
@@ -30,11 +30,12 @@ class MQTTClient():
                 try:
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
-                    logger.info(f"Carteira existente: {wallet}")
                     if not wallet:
                         wallet = await create_wallet(user_id = user_id, wallet_name = code)
-                        logger.info(f"Nova Carteira: {wallet}")
                     
+                    address = get_address_data(code)
+                    logger.info(f"Address: {address}")
+
                     pay_link_data = CreatePayLinkData(
                         wallet=wallet.id,
                         comment_chars=0,
