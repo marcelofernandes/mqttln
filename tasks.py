@@ -16,7 +16,7 @@ async def on_invoice_paid(payment: Payment, mqttClient):
     if (payment.pending == True or len(payment.checking_id) == 0 
         or payment.extra.get("tag") != "lnurlp" or payment.extra.get("lnaddress") == 0):
         return
-    code = payment.extra.get("lnaddress").split("@")[1]
+    code = payment.extra.get("lnaddress").split("@")[0]
     balance = payment.amount / 1000
     logger.info(f"Pagamento realizado para o código: {code}")
     device_payment_topic = f"device/payment/{code}"
