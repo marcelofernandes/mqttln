@@ -24,7 +24,7 @@ broker = "test.mosquitto.org"
 port = 1884
 wallet_topic = "wallet/+"
 device_wallet_topic = "device/wallet"
-# device_payment_topic = "device/payment"
+
 app_host = os.environ.get("NGROK_HOST", "81ae-177-84-220-115")
 
 mqtt_client: MQTTClient = MQTTClient(broker, port, wallet_topic, device_wallet_topic, app_host)
@@ -62,5 +62,5 @@ def mqttln_start():
     
     task = create_permanent_unique_task("ext_task_connect_mqtt", _start_mqtt_client)
     scheduled_tasks.append(task)
-    task2 = create_permanent_unique_task("mqttln", wait_for_paid_invoices)
+    task2 = create_permanent_unique_task("mqttln", wait_for_paid_invoices, mqtt_client)
     scheduled_tasks.append(task2)
