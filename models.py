@@ -34,23 +34,24 @@ class MQTTClient():
                         wallet = await create_wallet(user_id = user_id, wallet_name = code)
                     
                     address = await get_address_data(code)
-                    logger.info(f"Username: {address.username}")
-                    # Address: id='Pw2iRw' wallet='dea31cb01d104dedb305d81e15aa4ce5' description='Link de pagamento' min=1.0 served_meta=1 served_pr=1 username='zx24firnhm7iplg' zaps=False domain=None webhook_url=None webhook_headers=None webhook_body=None success_text=None success_url=None currency=None comment_chars=0 max=100.0 fiat_base_multiplier=100
+                    if address.username != code:
+                        pay_link_data = CreatePayLinkData(
+                            wallet=wallet.id,
+                            comment_chars=0,
+                            description="Link de pagamento",
+                            min=1,
+                            max=100,
+                            username=code,
+                            zaps=False
+                        )
+                        
+                        await create_pay_link(
+                            wallet_id=wallet.id,
+                            data=pay_link_data
+                        )
+                        logger.info("Pay link criado")
 
-                    pay_link_data = CreatePayLinkData(
-                        wallet=wallet.id,
-                        comment_chars=0,
-                        description="Link de pagamento",
-                        min=1,
-                        max=100,
-                        username=code,
-                        zaps=False
-                    )
-                    logger.info("Pay link criado")
-                    await create_pay_link(
-                        wallet_id=wallet.id,
-                        data=pay_link_data
-                    )
+                    
                     # Create LNaddress for Wallet created
                     # Publish LNaddress to Supplier
                     # self.client.publish(self.device_wallet_topic, msg)
