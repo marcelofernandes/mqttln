@@ -30,6 +30,7 @@ class MQTTClient():
                 try:
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
+                    logger.info(f"Carteira existente: {wallet}")
                     if not wallet:
                         wallet = await create_wallet(user_id = user_id, wallet_name = code)
                         logger.info(f"Nova Carteira: {wallet}")
