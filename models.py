@@ -47,7 +47,6 @@ class MQTTClient():
                         wallet_id=wallet.id,
                         data=pay_link_data
                     )
-
                     # Create LNaddress for Wallet created
                     # Publish LNaddress to Supplier
                     # self.client.publish(self.device_wallet_topic, msg)
