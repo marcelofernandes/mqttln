@@ -28,6 +28,7 @@ class MQTTClient():
 
             async def handle_message(code, user_id):
                 try:
+                    logger.info(f"Mensagem recebida!")
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     if not wallet:
