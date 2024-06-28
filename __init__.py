@@ -59,8 +59,9 @@ def mqttln_start():
             mqtt_client.connect_to_mqtt_broker()
             await asyncio.sleep(3)
             mqtt_client.start_mqtt_client()
-    
+    async def wrapper():
+        await wait_for_paid_invoices(mqtt_client)
     task = create_permanent_unique_task("ext_task_connect_mqtt", _start_mqtt_client)
     scheduled_tasks.append(task)
-    task2 = create_permanent_unique_task("mqttln", wait_for_paid_invoices, mqtt_client)
+    task2 = create_permanent_unique_task("mqttln", wrapper)
     scheduled_tasks.append(task2)
