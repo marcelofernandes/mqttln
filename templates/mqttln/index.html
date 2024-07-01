@@ -6,26 +6,6 @@
     <div class="text-h5 q-mb-md">
       Payment extension
     </div>
-
-    <!-- <q-card unelevated flat>
-      <div class="text-h6">Payments</div>
-
-          <div>
-            <p>
-              makes a payment
-            </p>
-
-            <p>
-              Click here to make a payment
-              <q-btn
-                size="sm"
-                color="primary"
-                @click="getPayment"
-                >here</q-btn
-              > <q-tooltip>payment</q-tooltip>
-            </p>
-          </div>
-    </q-card> -->
   </q-card-section>
 </q-card>
 {% endblock %} {% block scripts %} {{ window_vars(user) }}
@@ -42,32 +22,7 @@
       }
     },
     ///// Where functions live /////
-    methods: {
-      getPayment: function () {
-        dismissPaymentMsg = this.$q.notify({
-          timeout: 0,
-          message: 'Processing payment...'
-        })
-        LNbits.api
-          .request(
-            'GET',
-            '/mqttln/api/v1/mqtt',
-            '8662f429b2cd4ca3a01ea2b6ed001979'
-          )
-          .catch(err => {
-            LNbits.utils.notifyApiError(err)
-            dismissPaymentMsg();
-          })
-          .then(response => {
-            if (response.data.payment_hash) {
-              dismissPaymentMsg();
-              // window.location.reload();
-            }
-          })
-        return;
-        
-      },
-    },
+    methods: {},
     ///// To run on startup /////
     created: function () {
       self = this
