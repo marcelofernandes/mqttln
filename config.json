@@ -3,7 +3,5 @@
   "short_description": "Make payments",
   "tile": "/mqttln/static/bitcoin-extension.png",
   "min_lnbits_version": "0.12.6",
-  "description_md": "https://raw.githubusercontent.com/marcelofernandes/mqttln/main/description.md",
-  "terms_and_conditions_md": "https://raw.githubusercontent.com/marcelofernandes/mqttln/main/toc.md",
   "license": "MIT"
 }
