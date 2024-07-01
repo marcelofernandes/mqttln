@@ -1,5 +1,3 @@
-from http import HTTPStatus
-
 from fastapi import APIRouter # type: ignore
 
 mqttln_ext_api = APIRouter(
