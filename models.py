@@ -49,9 +49,9 @@ class MQTTClient():
                             wallet_id=wallet.id,
                             data=pay_link_data
                         )
-                        topic = f"{self.device_wallet_topic}/{code}"
-                        self.client.publish(topic, payload="", qos=0, retain=False)
-                        logger.info(f"Código enviado: {code} no topico: {topic}")
+                    topic = f"{self.device_wallet_topic}/{code}"
+                    self.client.publish(topic, payload="", qos=0, retain=False)
+                    logger.info(f"Código enviado: {code} no topico: {topic}")
                     
                 except Exception as e:
                     raise HTTPException(
