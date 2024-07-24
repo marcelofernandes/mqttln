@@ -20,6 +20,7 @@ class MQTTClient():
         self.username = "admin"
         self.password = "admin"
         self.client = None
+        self.connected = False
 
     def _ws_handlers(self):
             def on_connect(client, userdata, flags, rc):
