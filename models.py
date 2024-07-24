@@ -9,7 +9,6 @@ from lnbits.db import Database # type: ignore
 import json
 from lnbits.extensions.lnurlp.models import CreatePayLinkData # type: ignore
 from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # type: ignore
-from lnurl.types import LnurlPayMetadata
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
@@ -51,11 +50,12 @@ class MQTTClient():
                                 username=code,
                                 zaps=False
                             )
-                            logger.info(pay_link_data.domain)
-                            await create_pay_link(
+                            
+                            pay_link = await create_pay_link(
                                 wallet_id=wallet.id,
                                 data=pay_link_data
                             )
+                            logger.info(pay_link)
                         except Exception as e:
                             logger.info("Falha ao criar lnaddress!")
                             self.client.publish(topic, payload="", qos=1, retain=False)
@@ -68,9 +68,6 @@ class MQTTClient():
                     
                 except Exception as e:
                     logger.info(str(e))
-                    # raise HTTPException(
-                    #     status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
-                    # ) from e
 
             def on_message(client, userdata, msg):
                 if msg.topic.startswith("wallet/"):
