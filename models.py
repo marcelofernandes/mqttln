@@ -103,7 +103,7 @@ class MQTTClient():
                 self.client.connect(self.broker, self.port, 60)
                 self.connected = True
             except ConnectionRefusedError as e:
-                print(f"Erro de conexão: {e}. Tentando reconectar em 5 segundos...")
+                logger.info(f"Erro de conexão: {e}. Tentando reconectar em 5 segundos...")
                 await asyncio.sleep(5)
 
         # self.client.connect(self.broker, self.port, 60)
