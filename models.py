@@ -51,7 +51,7 @@ class MQTTClient():
                                 username=code,
                                 zaps=False
                             )
-                            
+                            logger.info(pay_link_data.domain)
                             await create_pay_link(
                                 wallet_id=wallet.id,
                                 data=pay_link_data
@@ -62,7 +62,7 @@ class MQTTClient():
                             return
                     topic = f"{self.device_wallet_topic}/{code}"
                     # lnaddress = paylink.lnurlpay_metadata()
-                    logger.info(self)
+                    
                     self.client.publish(topic, payload="", qos=1, retain=False)
                     logger.info(f"Código enviado: {code} no tópico: {topic}")
                     
