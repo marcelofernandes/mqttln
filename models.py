@@ -27,7 +27,7 @@ class MQTTClient():
                 logger.info("Conectado com código de resultado: " + str(rc))
                 client.subscribe(self.wallet_topic)
 
-            async def on_disconnect(client, userdata, flags, rc):
+            async def on_disconnect(client, userdata, rc):
                 logger.info("Desconectado do broker MQTT")
                 if rc != 0:
                     logger.info("Reconectando em 5 segundos...")
