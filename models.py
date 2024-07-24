@@ -9,6 +9,7 @@ from lnbits.db import Database # type: ignore
 import json
 from lnbits.extensions.lnurlp.models import CreatePayLinkData # type: ignore
 from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # type: ignore
+from lnurl.types import LnurlPayMetadata
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
@@ -26,37 +27,50 @@ class MQTTClient():
                 logger.info("Conectado com código de resultado: " + str(rc))
                 client.subscribe(self.wallet_topic)
 
-            async def handle_message(code, user_id):
+            async def handle_message(code, user_id, device_id):
                 try:
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     if not wallet:
-                        wallet = await create_wallet(user_id = user_id, wallet_name = code)
+                        try:  
+                            wallet = await create_wallet(user_id = user_id, wallet_name = code)
+                        except Exception as e:
+                            logger.info("Falha ao criar carteira!")
+                            self.client.publish(topic, payload="", qos=1, retain=False)
+                            return
                     
                     address = await get_address_data(code)
                     if address is None:
-                        pay_link_data = CreatePayLinkData(
-                            wallet=wallet.id,
-                            comment_chars=0,
-                            description="Link de pagamento",
-                            min=1,
-                            max=100000000,
-                            username=code,
-                            zaps=False
-                        )
-                        
-                        await create_pay_link(
-                            wallet_id=wallet.id,
-                            data=pay_link_data
-                        )
+                        try:
+                            pay_link_data = CreatePayLinkData(
+                                wallet=wallet.id,
+                                comment_chars=0,
+                                description = f"Link de pagamento para o dispositivo: {device_id}",
+                                min=1,
+                                max=100000000,
+                                username=code,
+                                zaps=False
+                            )
+                            
+                            await create_pay_link(
+                                wallet_id=wallet.id,
+                                data=pay_link_data
+                            )
+                        except Exception as e:
+                            logger.info("Falha ao criar lnaddress!")
+                            self.client.publish(topic, payload="", qos=1, retain=False)
+                            return
                     topic = f"{self.device_wallet_topic}/{code}"
-                    self.client.publish(topic, payload="", qos=0, retain=False)
-                    logger.info(f"Código enviado: {code} no topico: {topic}")
+                    # lnaddress = paylink.lnurlpay_metadata()
+                    logger.info(self)
+                    self.client.publish(topic, payload="", qos=1, retain=False)
+                    logger.info(f"Código enviado: {code} no tópico: {topic}")
                     
                 except Exception as e:
-                    raise HTTPException(
-                        status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
-                    ) from e
+                    logger.info(str(e))
+                    # raise HTTPException(
+                    #     status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e)
+                    # ) from e
 
             def on_message(client, userdata, msg):
                 if msg.topic.startswith("wallet/"):
@@ -64,8 +78,9 @@ class MQTTClient():
                     json_payload = msg.payload.decode()
                     payload = json.loads(json_payload)
                     user_id = payload['id']
+                    device_id = payload['device_id']
                     if len(code) > 0:
-                        asyncio.run(handle_message(code, user_id))
+                        asyncio.run(handle_message(code, user_id, device_id))
 
             return on_connect, on_message
 
