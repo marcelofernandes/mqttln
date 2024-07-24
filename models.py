@@ -4,7 +4,7 @@ from threading import Thread
 import asyncio
 from http import HTTPStatus
 from fastapi.exceptions import HTTPException # type: ignore
-from lnbits.core.crud import create_wallet # type: ignore
+from lnbits.core.crud import create_wallet, delete_wallet # type: ignore
 from lnbits.db import Database # type: ignore
 import json
 from lnbits.extensions.lnurlp.models import CreatePayLinkData # type: ignore
@@ -17,8 +17,8 @@ class MQTTClient():
         self.wallet_topic = wallet_topic
         self.device_wallet_topic = device_wallet_topic
         self.app_host = app_host
-        self.username = "rw"
-        self.password = "readwrite"
+        self.username = "admin"
+        self.password = "admin"
         self.client = None
 
     def _ws_handlers(self):
@@ -26,6 +26,13 @@ class MQTTClient():
                 logger.info("Conectado com código de resultado: " + str(rc))
                 client.subscribe(self.wallet_topic)
 
+            async def on_disconnect(client, userdata, flags, rc):
+                logger.info("Desconectado do broker MQTT")
+                if rc != 0:
+                    logger.info("Reconectando em 5 segundos...")
+                    await asyncio.sleep(5)
+                    client.reconnect()
+            
             async def handle_message(code, user_id, device_id):
                 try:
                     database = Database("database")
@@ -34,8 +41,9 @@ class MQTTClient():
                         try:  
                             wallet = await create_wallet(user_id = user_id, wallet_name = code)
                         except Exception as e:
-                            logger.info("Falha ao criar carteira!")
-                            self.client.publish(topic, payload="", qos=1, retain=False)
+                            logger.info(e)
+                            payload = json.dumps({"message": "Falha ao criar carteira!"})
+                            self.client.publish(topic, payload=payload, qos=1, retain=False)
                             return
                     
                     address = await get_address_data(code)
@@ -51,18 +59,17 @@ class MQTTClient():
                                 zaps=False
                             )
                             
-                            pay_link = await create_pay_link(
+                            await create_pay_link(
                                 wallet_id=wallet.id,
                                 data=pay_link_data
                             )
-                            logger.info(pay_link)
                         except Exception as e:
-                            logger.info("Falha ao criar lnaddress!")
-                            self.client.publish(topic, payload="", qos=1, retain=False)
+                            logger.info(e)
+                            payload = json.dumps({"message": "Falha ao criar lnaddress!"})
+                            await delete_wallet(user_id = user_id, wallet_id = wallet.id)
+                            self.client.publish(topic, payload=payload, qos=1, retain=False)
                             return
                     topic = f"{self.device_wallet_topic}/{code}"
-                    # lnaddress = paylink.lnurlpay_metadata()
-                    
                     self.client.publish(topic, payload="", qos=1, retain=False)
                     logger.info(f"Código enviado: {code} no tópico: {topic}")
                     
@@ -79,17 +86,27 @@ class MQTTClient():
                     if len(code) > 0:
                         asyncio.run(handle_message(code, user_id, device_id))
 
-            return on_connect, on_message
+            return on_connect, on_message, on_disconnect
 
-    def connect_to_mqtt_broker(self):
+    async def connect_to_mqtt_broker(self):
         logger.info("Conectando ao Broker MQTT")
-        on_connect, on_message = self._ws_handlers()
+        on_connect, on_message, on_disconnect = self._ws_handlers()
         self.client = mqtt.Client()
         self.client.on_connect = on_connect
         self.client.on_message = on_message
+        self.client.on_disconnect = on_disconnect
         self.client.username_pw_set(self.username, self.password)
-        self.client.connect(self.broker, self.port, 60)
-        self.connected = True
+
+        while not self.connected:
+            try:
+                self.client.connect(self.broker, self.port, 60)
+                self.connected = True
+            except ConnectionRefusedError as e:
+                print(f"Erro de conexão: {e}. Tentando reconectar em 5 segundos...")
+                await asyncio.sleep(5)
+
+        # self.client.connect(self.broker, self.port, 60)
+        # self.connected = True
     
     def start_mqtt_client(self):
         wst = Thread(target=self.client.loop_start)

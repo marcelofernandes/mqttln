@@ -17,11 +17,11 @@ from .models import MQTTClient
 
 import os
 
-# broker = "172.21.240.91"
-# port = 1883
+broker = "172.21.240.91"
+port = 1883
 
-broker = "test.mosquitto.org"
-port = 1884
+# broker = "test.mosquitto.org"
+# port = 1884
 wallet_topic = "wallet/+"
 device_wallet_topic = "device/wallet"
 
@@ -56,7 +56,7 @@ def mqttln_start():
         extension_active = await database.fetchone("SELECT * FROM extensions WHERE extension = 'mqttln' AND active = 1")
         if extension_active:
             await asyncio.sleep(3)
-            mqtt_client.connect_to_mqtt_broker()
+            await mqtt_client.connect_to_mqtt_broker()
             await asyncio.sleep(3)
             mqtt_client.start_mqtt_client()
     async def wrapper():
