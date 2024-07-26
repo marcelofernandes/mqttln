@@ -2,8 +2,6 @@ import paho.mqtt.client as mqtt # type: ignore
 from loguru import logger # type: ignore
 from threading import Thread
 import asyncio
-from http import HTTPStatus
-from fastapi.exceptions import HTTPException # type: ignore
 from lnbits.core.crud import create_wallet, delete_wallet # type: ignore
 from lnbits.db import Database # type: ignore
 import json
@@ -30,18 +28,40 @@ class MQTTClient():
             def on_disconnect(client, userdata, rc):
                 logger.info("Desconectado do broker MQTT")
                 self.connected = False
-            #     if rc != 0:
-            #         logger.info("Reconectando em 5 segundos...")
-            #         await asyncio.sleep(5)
-            #         client.reconnect()
             
+            async def exponencial_wait(value):
+                time = 2 ** value
+                await asyncio.sleep(time)
+                
+            async def create_new_wallet(user_id, code, attempt = 1):
+                try:
+                    wallet = await create_wallet(user_id = user_id, wallet_name = code)
+                    return wallet
+                except Exception as e:
+                    if attempt <= 5:
+                        await exponencial_wait(attempt)
+                        await create_new_wallet(user_id, code, attempt + 1)
+                    else:
+                        raise e
+
+            async def create_new_paylink(wallet, pay_link_data, attempt = 1):
+                try:
+                    await create_pay_link(wallet_id=wallet.id, data=pay_link_data)
+                    return
+                except Exception as e:
+                    if attempt <= 5:
+                        await exponencial_wait(attempt)
+                        await create_new_paylink(wallet.id, pay_link_data, attempt + 1)
+                    else:
+                        raise e
+
             async def handle_message(code, user_id, device_id):
                 try:
                     database = Database("database")
                     wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND user = ? AND deleted = 0", (code, user_id))
                     if not wallet:
                         try:  
-                            wallet = await create_wallet(user_id = user_id, wallet_name = code)
+                            wallet = await create_new_wallet(user_id = user_id, wallet_name = code)
                         except Exception as e:
                             logger.info(e)
                             payload = json.dumps({"message": "Falha ao criar carteira!"})
@@ -61,10 +81,7 @@ class MQTTClient():
                                 zaps=False
                             )
                             
-                            await create_pay_link(
-                                wallet_id=wallet.id,
-                                data=pay_link_data
-                            )
+                            await create_new_paylink(wallet_id=wallet.id, data=pay_link_data)
                         except Exception as e:
                             logger.info(e)
                             payload = json.dumps({"message": "Falha ao criar lnaddress!"})
@@ -98,18 +115,14 @@ class MQTTClient():
         self.client.on_message = on_message
         self.client.on_disconnect = on_disconnect
         self.client.username_pw_set(self.username, self.password)
-
         while not self.connected:
             try:
-                self.client.connect(self.broker, self.port, 60)
+                self.client.connect(self.broker, self.port, 60, clean_start=False)
                 self.connected = True
             except ConnectionRefusedError as e:
                 logger.info(f"Erro de conexão: {e}. Tentando reconectar em 5 segundos...")
                 await asyncio.sleep(5)
 
-        # self.client.connect(self.broker, self.port, 60)
-        # self.connected = True
-    
     def start_mqtt_client(self):
         wst = Thread(target=self.client.loop_start)
         wst.daemon = True
