@@ -119,7 +119,13 @@ class MQTTClient():
                     callback="https://f4e1-177-84-218-53.ngrok-free.app/lnurlp/api/v1/lnurl/cb/lnaddr/XjJesc",
                     amount= 100000,
                     description = "Payment to marcelo")
-                await api_payments_pay_lnurl(data, wallet_info)
+                try:
+                    logger.info(f"Data: {data}")
+                    logger.info(f"Wallet: {wallet_info}")
+                    await api_payments_pay_lnurl(data, wallet_info)
+                    logger.info(f"Passed api_payments_pay_lnurl")
+                except Exception as e:
+                    logger.info(str(e))
             
             def on_message(client, userdata, msg):
                 if msg.topic.startswith("wallet/invoice"):
