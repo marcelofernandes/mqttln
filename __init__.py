@@ -22,7 +22,7 @@ port = 1883
 
 # broker = "test.mosquitto.org"
 # port = 1884
-wallet_topic = "wallet/+"
+wallet_topic = "wallet/#"
 device_wallet_topic = "device/wallet"
 
 app_host = os.environ.get("NGROK_HOST", "81ae-177-84-220-115")

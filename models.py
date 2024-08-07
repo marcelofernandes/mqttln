@@ -101,6 +101,8 @@ class MQTTClient():
                     logger.info(str(e))
 
             async def handle_message_pay_invoice_lnbc(code, invoice):
+                logger.info(f"Code: {code}")
+                logger.info(f"Invoice: {invoice}")
                 database = Database("database")
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
                 await pay_invoice(wallet.id, invoice)
@@ -109,8 +111,6 @@ class MQTTClient():
                 lnurl_response = await api_lnurlscan(invoice)
             
             def on_message(client, userdata, msg):
-                logger.info(f"Topic: {msg.topic}")
-                logger.info(f"Message: {msg.payload.decode()}")
                 if msg.topic.startswith("wallet/invoice"):
                     code = msg.topic.split("/")[2]
                     json_payload = msg.payload.decode()
@@ -119,8 +119,6 @@ class MQTTClient():
                     if re.match(r'[\w.+-~_]+@[\w.+-~_]', invoice):
                         asyncio.run(handle_message_pay_invoice_lnurl(code, invoice))
                     else:
-                        logger.info(f"Code: {code}")
-                        logger.info(f"Invoice: {invoice}")
                         asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                 elif msg.topic.startswith("wallet/"):
                     code = msg.topic.split("/", 1)[1]
