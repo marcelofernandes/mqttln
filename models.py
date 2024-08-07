@@ -5,8 +5,13 @@ import asyncio
 from lnbits.core.crud import create_wallet, delete_wallet # type: ignore
 from lnbits.db import Database # type: ignore
 import json
+import re
 from lnbits.extensions.lnurlp.models import CreatePayLinkData # type: ignore
 from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # type: ignore
+
+from lnbits.core.services import pay_invoice # type: ignore
+from lnbits.lnbits.core.views.api import api_lnurlscan # type: ignore
+from lnbits.lnbits.core.views.payment_api import api_payments_pay_lnurl # type: ignore
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
@@ -95,8 +100,27 @@ class MQTTClient():
                 except Exception as e:
                     logger.info(str(e))
 
+            async def handle_message_pay_invoice_lnbc(code, invoice):
+                database = Database("database")
+                wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
+                await pay_invoice(wallet.id, invoice)
+            
+            async def handle_message_pay_invoice_lnurl(code, invoice):
+                await lnurl_response = api_lnurlscan(invoice)
+            
             def on_message(client, userdata, msg):
-                if msg.topic.startswith("wallet/"):
+                if msg.topic.startswith("wallet/invoice"):
+                    code = msg.topic.split("/")[2]
+                    json_payload = msg.payload.decode()
+                    payload = json.loads(json_payload)
+                    invoice = payload['invoice']
+                    if re.match(r'[\w.+-~_]+@[\w.+-~_]', invoice):
+                        asyncio.run(handle_message_pay_invoice_lnurl(code, invoice))
+                    else:
+                        logger.info(f"Code: {code}")
+                        logger.info(f"Invoice: {invoice}")
+                        asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
+                elif msg.topic.startswith("wallet/"):
                     code = msg.topic.split("/", 1)[1]
                     json_payload = msg.payload.decode()
                     payload = json.loads(json_payload)

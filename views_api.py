@@ -19,3 +19,10 @@ async def api_get_health_check(user: User = Depends(check_user_exists)):
     balance = await database.fetchone(f"SELECT SUM(apipayments.amount - ABS(apipayments.fee)) AS balance FROM apipayments LEFT JOIN wallets ON apipayments.wallet = wallets.id WHERE wallets.user = ? and  (wallets.deleted = false OR wallets.deleted is NULL) AND ((apipayments.pending = false AND apipayments.amount > 0) OR apipayments.amount < 0)", (user.id))
     logger.info(f"Balance: {balance[0]}")
     return f"Balance: {balance[0]}"
+
+@mqttln_ext_api.get("/transfer/{wallet_id}", description="Transfer")
+async def api_transfer(wallet_id: str, user: User = Depends(check_user_exists)):
+    database = Database("database")
+    await database.fetchone(f"SELECT ?", (user.id))
+    logger.info(f"Transfered")
+    return f"Transfered"
