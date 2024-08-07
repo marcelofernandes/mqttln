@@ -116,12 +116,11 @@ class MQTTClient():
                 wallet_info = WalletTypeInfo(1, wallet)
                 lnurl_response = await api_lnurlscan(code=invoice, wallet=wallet_info)
                 logger.info(f"Payload: {lnurl_response}")
-                logger.info(f"Description hash: {lnurl_response.description_hash}")
                 data = CreateLnurl(
-                    description_hash="bca8ec30cc1ed5990a67ec905fd70b4cb5b08ff5113151f53cfab1ada1affb42",
-                    callback=lnurl_response.callback,
+                    description_hash=lnurl_response['description_hash'],
+                    callback=lnurl_response['callback'],
                     amount=amount,
-                    description=lnurl_response.description)
+                    description=lnurl_response['description'])
                 try:
                     payment_response = await api_payments_pay_lnurl(data, wallet_info)
                     logger.info(f"Payment response: {payment_response}")
