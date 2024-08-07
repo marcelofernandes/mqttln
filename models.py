@@ -108,7 +108,10 @@ class MQTTClient():
                 await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
             
             async def handle_message_pay_invoice_lnurl(code, invoice):
-                lnurl_response = await api_lnurlscan(invoice)
+                logger.info(f"Invoice: {invoice}")
+                lnurl_response = await api_lnurlscan(code=invoice, wallet=None)
+                logger.info(f"Lnurl_response: {lnurl_response}")
+                # await api_payments_pay_lnurl(lnurl_response)
             
             def on_message(client, userdata, msg):
                 if msg.topic.startswith("wallet/invoice"):
