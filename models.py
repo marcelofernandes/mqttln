@@ -116,7 +116,7 @@ class MQTTClient():
                 lnurl_response = await api_lnurlscan(code=invoice, wallet=wallet_info)
                 logger.info(f"Lnurl_response: {lnurl_response}")
                 data = CreateLnurl(description_hash= "6dd3a0e6e8896cfecac21889979f67a86fd14aab682ecf90c44b8465e8082fa8",
-                    callback="https://f4e1-177-84-218-53.ngrok-free.app/lnurlp/api/v1/lnurl/cb/lnaddr/XjJesc"
+                    callback="https://f4e1-177-84-218-53.ngrok-free.app/lnurlp/api/v1/lnurl/cb/lnaddr/XjJesc",
                     amount= 100000,
                     description = "Payment to marcelo")
                 await api_payments_pay_lnurl(data, wallet_info)
