@@ -120,10 +120,8 @@ class MQTTClient():
                     amount= 100000,
                     description = "Payment to marcelo")
                 try:
-                    logger.info(f"Data: {data}")
-                    logger.info(f"Wallet: {wallet_info}")
-                    await api_payments_pay_lnurl(data, wallet_info)
-                    logger.info(f"Passed api_payments_pay_lnurl")
+                    payment_response = await api_payments_pay_lnurl(data, wallet_info)
+                    logger.info(f"Payment response: {payment_response}")
                 except Exception as e:
                     logger.info(str(e))
             
