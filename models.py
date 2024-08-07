@@ -104,7 +104,8 @@ class MQTTClient():
             async def handle_message_pay_invoice_lnbc(code, invoice):
                 database = Database("database")
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
-                await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
+                payment_response = await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
+                logger.info(f"Payment response: {payment_response}")
             
             async def handle_message_pay_invoice_lnurl(code, invoice, amount):
                 database = Database("database")
@@ -117,7 +118,8 @@ class MQTTClient():
                     amount=amount,
                     description=lnurl_response['description'])
                 try:
-                    await api_payments_pay_lnurl(data, wallet_info)
+                    payment_response = await api_payments_pay_lnurl(data, wallet_info)
+                    logger.info(f"Payment response: {payment_response}")
                 except Exception as e:
                     logger.info(str(e))
             
