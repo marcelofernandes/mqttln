@@ -10,8 +10,8 @@ from lnbits.extensions.lnurlp.models import CreatePayLinkData # type: ignore
 from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # type: ignore
 
 from lnbits.core.services import pay_invoice # type: ignore
-from lnbits.lnbits.core.views.api import api_lnurlscan # type: ignore
-from lnbits.lnbits.core.views.payment_api import api_payments_pay_lnurl # type: ignore
+from lnbits.core.views.api import api_lnurlscan # type: ignore
+from lnbits.core.views.payment_api import api_payments_pay_lnurl # type: ignore
 
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
