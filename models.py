@@ -105,7 +105,7 @@ class MQTTClient():
                 logger.info(f"Invoice: {invoice}")
                 database = Database("database")
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
-                await pay_invoice(wallet.id, invoice)
+                await pay_invoice(wallet_id=wallet.id, invoice=invoice)
             
             async def handle_message_pay_invoice_lnurl(code, invoice):
                 lnurl_response = await api_lnurlscan(invoice)
