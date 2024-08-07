@@ -104,6 +104,7 @@ class MQTTClient():
             async def handle_message_pay_invoice_lnbc(code, invoice):
                 database = Database("database")
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
+                logger.info(f"Wallet: {wallet}")
                 payment_response = await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
                 logger.info(f"Payment response: {payment_response}")
             
