@@ -132,7 +132,8 @@ class MQTTClient():
                     json_payload = msg.payload.decode()
                     payload = json.loads(json_payload)
                     invoice = payload['invoice']
-                    amount = payload['amount']
+                    amount = 100000
+                    logger.info(f"payload: {payload}")
                     if amount:
                         asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, amount))
                     else:
