@@ -11,6 +11,7 @@ from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # ty
 
 from lnbits.core.services import pay_invoice # type: ignore
 from lnbits.core.views.api import api_lnurlscan # type: ignore
+from lnbits.core.models import WalletTypeInfo, KeyType # type: ignore
 from lnbits.core.views.payment_api import api_payments_pay_lnurl # type: ignore
 
 class MQTTClient():
@@ -109,7 +110,10 @@ class MQTTClient():
             
             async def handle_message_pay_invoice_lnurl(code, invoice):
                 logger.info(f"Invoice: {invoice}")
-                lnurl_response = await api_lnurlscan(code=invoice, wallet=None)
+                database = Database("database")
+                wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
+                wallet_info = WalletTypeInfo(key_type=KeyType.invoice, wallet=wallet)
+                lnurl_response = await api_lnurlscan(code=invoice, wallet=wallet_info)
                 logger.info(f"Lnurl_response: {lnurl_response}")
                 # await api_payments_pay_lnurl(lnurl_response)
             
