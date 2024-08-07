@@ -102,28 +102,22 @@ class MQTTClient():
                     logger.info(str(e))
 
             async def handle_message_pay_invoice_lnbc(code, invoice):
-                logger.info(f"Code: {code}")
-                logger.info(f"Invoice: {invoice}")
                 database = Database("database")
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
                 await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
             
             async def handle_message_pay_invoice_lnurl(code, invoice, amount):
-                logger.info(f"Invoice: {invoice}")
-                logger.info(f"Amount: {amount}")
                 database = Database("database")
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
                 wallet_info = WalletTypeInfo(1, wallet)
                 lnurl_response = await api_lnurlscan(code=invoice, wallet=wallet_info)
-                logger.info(f"Payload: {lnurl_response}")
                 data = CreateLnurl(
                     description_hash=lnurl_response['description_hash'],
                     callback=lnurl_response['callback'],
                     amount=amount,
                     description=lnurl_response['description'])
                 try:
-                    payment_response = await api_payments_pay_lnurl(data, wallet_info)
-                    logger.info(f"Payment response: {payment_response}")
+                    await api_payments_pay_lnurl(data, wallet_info)
                 except Exception as e:
                     logger.info(str(e))
             
@@ -133,8 +127,7 @@ class MQTTClient():
                     json_payload = msg.payload.decode()
                     payload = json.loads(json_payload)
                     invoice = payload['invoice']
-                    amount = 100000
-                    logger.info(f"Amount: {payload['amount']}")
+                    amount = payload['amount']
                     if amount:
                         asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, amount))
                     else:
