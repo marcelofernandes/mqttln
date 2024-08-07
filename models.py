@@ -108,17 +108,18 @@ class MQTTClient():
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
                 await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
             
-            async def handle_message_pay_invoice_lnurl(code, invoice):
+            async def handle_message_pay_invoice_lnurl(code, invoice, amount):
                 logger.info(f"Invoice: {invoice}")
+                logger.info(f"Amount: {amount}")
                 database = Database("database")
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
                 wallet_info = WalletTypeInfo(1, wallet)
                 lnurl_response = await api_lnurlscan(code=invoice, wallet=wallet_info)
                 logger.info(f"Lnurl_response: {lnurl_response}")
-                data = CreateLnurl(description_hash= "6dd3a0e6e8896cfecac21889979f67a86fd14aab682ecf90c44b8465e8082fa8",
-                    callback="https://f4e1-177-84-218-53.ngrok-free.app/lnurlp/api/v1/lnurl/cb/lnaddr/XjJesc",
-                    amount= 100000,
-                    description = "Payment to marcelo")
+                data = CreateLnurl(description_hash=lnurl_response.description_hash,
+                    callback=lnurl_response.callback,
+                    amount=amount,
+                    description=lnurl_response.description)
                 try:
                     payment_response = await api_payments_pay_lnurl(data, wallet_info)
                     logger.info(f"Payment response: {payment_response}")
@@ -131,8 +132,9 @@ class MQTTClient():
                     json_payload = msg.payload.decode()
                     payload = json.loads(json_payload)
                     invoice = payload['invoice']
-                    if re.match(r'[\w.+-~_]+@[\w.+-~_]', invoice):
-                        asyncio.run(handle_message_pay_invoice_lnurl(code, invoice))
+                    amount = payload['amount']
+                    if amount:
+                        asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, amount))
                     else:
                         asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                 elif msg.topic.startswith("wallet/"):
