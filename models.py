@@ -129,9 +129,8 @@ class MQTTClient():
                     json_payload = msg.payload.decode()
                     payload = json.loads(json_payload)
                     invoice = payload['invoice']
-                    amount = payload['amount']
-                    if amount:
-                        asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, amount))
+                    if 'amount' in payload:
+                        asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                     else:
                         asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                 elif msg.topic.startswith("wallet/"):
