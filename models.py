@@ -115,8 +115,10 @@ class MQTTClient():
                 wallet = await database.fetchone(f"SELECT * FROM wallets WHERE name = ? AND deleted = 0", (code))
                 wallet_info = WalletTypeInfo(1, wallet)
                 lnurl_response = await api_lnurlscan(code=invoice, wallet=wallet_info)
-                logger.info(f"Lnurl_response: {lnurl_response}")
-                data = CreateLnurl(description_hash=lnurl_response.description_hash,
+                logger.info(f"Payload: {lnurl_response}")
+                logger.info(f"Description hash: {lnurl_response.description_hash}")
+                data = CreateLnurl(
+                    description_hash="bca8ec30cc1ed5990a67ec905fd70b4cb5b08ff5113151f53cfab1ada1affb42",
                     callback=lnurl_response.callback,
                     amount=amount,
                     description=lnurl_response.description)
