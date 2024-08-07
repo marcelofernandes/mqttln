@@ -11,7 +11,7 @@ from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # ty
 
 from lnbits.core.services import pay_invoice # type: ignore
 from lnbits.core.views.api import api_lnurlscan # type: ignore
-from lnbits.core.models import WalletTypeInfo # type: ignore
+from lnbits.core.models import WalletTypeInfo, CreateLnurl # type: ignore
 from lnbits.core.views.payment_api import api_payments_pay_lnurl # type: ignore
 
 class MQTTClient():
@@ -115,7 +115,11 @@ class MQTTClient():
                 wallet_info = WalletTypeInfo(1, wallet)
                 lnurl_response = await api_lnurlscan(code=invoice, wallet=wallet_info)
                 logger.info(f"Lnurl_response: {lnurl_response}")
-                # await api_payments_pay_lnurl(lnurl_response)
+                data = CreateLnurl(description_hash= "6dd3a0e6e8896cfecac21889979f67a86fd14aab682ecf90c44b8465e8082fa8",
+                    callback="https://f4e1-177-84-218-53.ngrok-free.app/lnurlp/api/v1/lnurl/cb/lnaddr/XjJesc"
+                    amount= 100000,
+                    description = "Payment to marcelo")
+                await api_payments_pay_lnurl(data, wallet_info)
             
             def on_message(client, userdata, msg):
                 if msg.topic.startswith("wallet/invoice"):
