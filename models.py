@@ -109,6 +109,8 @@ class MQTTClient():
                 lnurl_response = await api_lnurlscan(invoice)
             
             def on_message(client, userdata, msg):
+                logger.info(f"Topic: {msg.topic}")
+                logger.info(f"Message: {msg.payload.decode()}")
                 if msg.topic.startswith("wallet/invoice"):
                     code = msg.topic.split("/")[2]
                     json_payload = msg.payload.decode()
