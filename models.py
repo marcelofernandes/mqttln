@@ -108,7 +108,7 @@ class MQTTClient():
                 payment_response = await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
                 logger.info(f"Payment response: {payment_response}")
                 topic = f"device/receipt/{code}"
-                payload = json.dumps({"receipt": payment_response})
+                payload = json.dumps({"receipt": payment_response, "paid": True})
                 self.client.publish(topic, payload=payload, qos=1, retain=False)
             
             async def handle_message_pay_invoice_lnurl(code, invoice, amount):
@@ -125,7 +125,7 @@ class MQTTClient():
                     payment_response = await api_payments_pay_lnurl(data, wallet_info)
                     logger.info(f"Payment response: {payment_response}")
                     topic = f"device/receipt/{code}"
-                    payload = json.dumps({"receipt": payment_response})
+                    payload = json.dumps({"receipt": payment_response, "paid": True})
                     self.client.publish(topic, payload=payload, qos=1, retain=False)
                 except Exception as e:
                     logger.info(str(e))
