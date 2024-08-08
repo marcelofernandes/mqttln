@@ -14,6 +14,11 @@ from lnbits.core.views.api import api_lnurlscan # type: ignore
 from lnbits.core.models import WalletTypeInfo, CreateLnurl # type: ignore
 from lnbits.core.views.payment_api import api_payments_pay_lnurl # type: ignore
 
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.exceptions import InvalidSignature
+from cryptography.hazmat.backends import default_backend
+
 class MQTTClient():
     def __init__(self, broker, port, wallet_topic, device_wallet_topic, app_host):
         self.broker = broker
@@ -125,7 +130,7 @@ class MQTTClient():
                     payment_response = await api_payments_pay_lnurl(data, wallet_info)
                     logger.info(f"Payment response: {payment_response}")
                     topic = f"device/receipt/{code}"
-                    payload = json.dumps({"receipt": payment_response, "paid": True})
+                    payload = json.dumps({"receipt": payment_response, "paid": True, amount: amount})
                     self.client.publish(topic, payload=payload, qos=1, retain=False)
                 except Exception as e:
                     logger.info(str(e))
@@ -136,6 +141,40 @@ class MQTTClient():
                     json_payload = msg.payload.decode()
                     payload = json.loads(json_payload)
                     invoice = payload['invoice']
+                    pub_key = payload['pub_key']
+                    signature = payload['signature']
+
+                    public_key_pem = pub_key.encode()
+                    invoice_bytes = invoice.encode()
+
+                    signature_bytes = bytes.fromhex(signature)
+                    # Carregar a chave pública
+                    public_key = serialization.load_pem_public_key(
+                        public_key_pem,
+                        backend=default_backend()
+                    )
+
+                    # Concatenar a mensagem com a chave pública
+                    # Serializar a chave pública em formato PEM
+                    public_key_bytes = public_key.public_bytes(
+                        encoding=serialization.Encoding.PEM,
+                        format=serialization.PublicFormat.SubjectPublicKeyInfo
+                    )
+
+                    # Concatenar a mensagem com a chave pública
+                    message_with_pubkey = invoice_bytes + public_key_bytes
+
+                    # Verificar a assinatura
+                    try:
+                        public_key.verify(
+                            signature_bytes,
+                            message_with_pubkey,
+                            ec.ECDSA(hashes.SHA256())
+                        )
+                        logger.info("A assinatura é válida.")
+                    except InvalidSignature:
+                        logger.info("A assinatura não é válida.")
+
                     if 'amount' in payload:
                         asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                     else:
