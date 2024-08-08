@@ -171,14 +171,12 @@ class MQTTClient():
                             message_with_pubkey,
                             ec.ECDSA(hashes.SHA256())
                         )
-                        logger.info("A assinatura é válida.")
+                        if 'amount' in payload:
+                            asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
+                        else:
+                            asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                     except InvalidSignature:
-                        logger.info("A assinatura não é válida.")
-
-                    if 'amount' in payload:
-                        asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
-                    else:
-                        asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
+                        logger.info("Invalid signature")
                 elif msg.topic.startswith("wallet/"):
                     code = msg.topic.split("/", 1)[1]
                     json_payload = msg.payload.decode()
