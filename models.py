@@ -181,28 +181,26 @@ class MQTTClient():
                             ec.ECDSA(hashes.SHA256())
                         )
                         if 'amount' in payload:
-                            loop = asyncio.new_event_loop()
-                            asyncio.set_event_loop(loop)
-                            futuro = asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']), loop)
+                            # loop = asyncio.new_event_loop()
+                            # asyncio.set_event_loop(loop)
+                            # futuro = asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']), loop)
 
-                            # Obtendo o resultado da corrotina
-                            try:
-                                resultado = futuro.result()  # Isso bloqueia até que o resultado esteja disponível
-                                logger.info(f"Resultado {resultado}")
-                            except Exception as e:
-                                logger.info(f"Erro: {e}")
-                            # asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
+                            # try:
+                            #     resultado = futuro.result()  # Isso bloqueia até que o resultado esteja disponível
+                            #     logger.info(f"Resultado {resultado}")
+                            # except Exception as e:
+                            #     logger.info(f"Erro: {e}")
+                            asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                         else:
-                            loop = asyncio.new_event_loop()
-                            asyncio.set_event_loop(loop)
-                            futuro = asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), loop)
-                             # Obtendo o resultado da corrotina
-                            try:
-                                resultado = futuro.result()  # Isso bloqueia até que o resultado esteja disponível
-                                logger.info(f"Resultado {resultado}")
-                            except Exception as e:
-                                logger.info(f"Erro: {e}")
-                            # asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
+                            # loop = asyncio.new_event_loop()
+                            # asyncio.set_event_loop(loop)
+                            # futuro = asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), loop)
+                            # try:
+                            #     resultado = futuro.result()  # Isso bloqueia até que o resultado esteja disponível
+                            #     logger.info(f"Resultado {resultado}")
+                            # except Exception as e:
+                            #     logger.info(f"Erro: {e}")
+                            asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                     except InvalidSignature:
                         logger.info("Invalid signature")
                 elif msg.topic.startswith("wallet/"):
@@ -226,7 +224,7 @@ class MQTTClient():
         self.client.username_pw_set(self.username, self.password)
         while not self.connected:
             try:
-                self.client.connect(self.broker, self.port, 60)
+                self.client.connect(self.broker, self.port, 6000)
                 self.connected = True
             except ConnectionRefusedError as e:
                 logger.info(f"Erro de conexão: {e}. Tentando reconectar em 5 segundos...")
