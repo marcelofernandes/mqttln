@@ -180,13 +180,16 @@ class MQTTClient():
                             ec.ECDSA(hashes.SHA256())
                         )
                         if 'amount' in payload:
-                            loop = asyncio.new_event_loop()
-                            asyncio.set_event_loop(loop)
+                            loop = asyncio.get_event_loop()
+                            # loop = asyncio.new_event_loop()
+                            # asyncio.set_event_loop(loop)
                             asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']), loop)
                             # asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                         else:
-                            loop = asyncio.new_event_loop()
-                            asyncio.set_event_loop(loop)
+                            loop = asyncio.get_event_loop()
+                            # if loop is None:
+                            #     loop = asyncio.new_event_loop()
+                            #     asyncio.set_event_loop(loop)
                             asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), loop)
                             # asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                     except InvalidSignature:
