@@ -113,7 +113,7 @@ class MQTTClient():
                 payment_response = await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
                 logger.info(f"Payment response: {payment_response}")
                 topic = f"device/receipt/{code}"
-                payment = await api_payment(payment_response)
+                payment = await api_payment(payment_response, wallet.adminkey)
                 logger.info(f"Payment: {payment}")
                 logger.info(f"Payment details: {payment['details']}")
                 amount_paid = payment['details']['amount']
