@@ -113,7 +113,8 @@ class MQTTClient():
                 payment_response = await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
                 logger.info(f"Payment response: {payment_response}")
                 topic = f"device/receipt/{code}"
-                payment = api_payment(payment_response.payment_hash)
+                payment = api_payment(payment_response)
+                logger.info(f"Payment: {payment}")
                 amount_paid = payment.details.amount
                 logger.info(f"Amount paid: {amount_paid}")
                 payload = json.dumps({"receipt": payment_response, "paid": True})
