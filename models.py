@@ -30,6 +30,7 @@ class MQTTClient():
         self.password = "admin"
         self.client = None
         self.connected = False
+        self.main_loop = None
 
     def _ws_handlers(self):
             def on_connect(client, userdata, flags, rc):
@@ -181,13 +182,11 @@ class MQTTClient():
                         )
                         if 'amount' in payload:
                             # asyncio.create_task(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
-                            asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']), self.client.loop)
+                            asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']), self.main_loop)
                             # asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                         else:
-                            loop = asyncio.new_event_loop()
-                            asyncio.set_event_loop(loop)
-                            asyncio.create_task(handle_message_pay_invoice_lnbc(code, invoice))
-                            # asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), self.client.loop)
+                            # asyncio.create_task(handle_message_pay_invoice_lnbc(code, invoice))
+                            asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), self.main_loop)
                             # asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                     except InvalidSignature:
                         logger.info("Invalid signature")
@@ -220,6 +219,7 @@ class MQTTClient():
 
     def start_mqtt_client(self):
         wst = Thread(target=self.client.loop_start)
+        self.main_loop = self.client.loop()
         wst.daemon = True
         wst.start()
 
