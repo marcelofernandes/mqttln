@@ -224,7 +224,7 @@ class MQTTClient():
         self.client.username_pw_set(self.username, self.password)
         while not self.connected:
             try:
-                self.client.connect(self.broker, self.port, 6000)
+                self.client.connect(self.broker, self.port, 6)
                 self.connected = True
             except ConnectionRefusedError as e:
                 logger.info(f"Erro de conexão: {e}. Tentando reconectar em 5 segundos...")
