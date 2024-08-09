@@ -12,7 +12,7 @@ from lnbits.extensions.lnurlp.crud import create_pay_link, get_address_data # ty
 from lnbits.core.services import pay_invoice # type: ignore
 from lnbits.core.views.api import api_lnurlscan # type: ignore
 from lnbits.core.models import WalletTypeInfo, CreateLnurl # type: ignore
-from lnbits.core.views.payment_api import api_payments_pay_lnurl # type: ignore
+from lnbits.core.views.payment_api import api_payments_pay_lnurl, api_payment # type: ignore
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -113,6 +113,9 @@ class MQTTClient():
                 payment_response = await pay_invoice(wallet_id=wallet.id, payment_request=invoice)
                 logger.info(f"Payment response: {payment_response}")
                 topic = f"device/receipt/{code}"
+                payment = api_payment(payment_response.payment_hash)
+                amount_paid = payment.details.amount
+                logger.info(f"Amount paid: {amount_paid}")
                 payload = json.dumps({"receipt": payment_response, "paid": True})
                 self.client.publish(topic, payload=payload, qos=1, retain=False)
             
@@ -130,6 +133,7 @@ class MQTTClient():
                     payment_response = await api_payments_pay_lnurl(data, wallet_info)
                     logger.info(f"Payment response: {payment_response}")
                     topic = f"device/receipt/{code}"
+                    amount_paid = 100
                     payload = json.dumps({"receipt": payment_response, "paid": True, amount: amount})
                     self.client.publish(topic, payload=payload, qos=1, retain=False)
                 except Exception as e:
