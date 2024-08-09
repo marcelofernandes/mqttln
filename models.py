@@ -184,8 +184,10 @@ class MQTTClient():
                             asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']), self.client.loop)
                             # asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                         else:
-                            asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), self.client.loop)
-                            # asyncio.create_task(handle_message_pay_invoice_lnbc(code, invoice))
+                            loop = asyncio.new_event_loop()
+                            asyncio.set_event_loop(loop)
+                            asyncio.create_task(handle_message_pay_invoice_lnbc(code, invoice))
+                            # asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), self.client.loop)
                             # asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                     except InvalidSignature:
                         logger.info("Invalid signature")
