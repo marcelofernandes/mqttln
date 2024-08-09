@@ -219,9 +219,9 @@ class MQTTClient():
 
     def start_mqtt_client(self):
         wst = Thread(target=self.client.loop_start)
-        self.main_loop = self.client.loop()
         wst.daemon = True
         wst.start()
+        self.main_loop = asyncio.get_event_loop()
 
     def disconnect_to_mqtt_broker(self):
         if self.connected is True:
