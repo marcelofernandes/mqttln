@@ -116,7 +116,7 @@ class MQTTClient():
                 payment = await api_payment(payment_response, wallet.adminkey)
                 logger.info(f"Payment: {payment}")
                 logger.info(f"Payment details: {payment['details']}")
-                amount_paid = payment['details']['amount']
+                amount_paid = payment['details'].amount
                 logger.info(f"Amount paid: {amount_paid}")
                 payload = json.dumps({"receipt": payment_response, "paid": True})
                 self.client.publish(topic, payload=payload, qos=1, retain=False)
