@@ -115,9 +115,9 @@ class MQTTClient():
                 topic = f"device/receipt/{code}"
                 payment = await api_payment(payment_response, wallet.adminkey)
                 amount_paid = payment['details'].amount
-                valor_absoluto = abs(amount_paid)
-                logger.info(f"Amount paid: {valor_absoluto / 1000}")
-                payload = json.dumps({"receipt": payment_response, "paid": True})
+                valor_absoluto = abs(amount_paid) / 1000
+                logger.info(f"Amount paid: {valor_absoluto}")
+                payload = json.dumps({"receipt": payment_response, "paid": True, "balance": valor_absoluto})
                 self.client.publish(topic, payload=payload, qos=1, retain=False)
             
             async def handle_message_pay_invoice_lnurl(code, invoice, amount):
@@ -134,8 +134,11 @@ class MQTTClient():
                     payment_response = await api_payments_pay_lnurl(data, wallet_info)
                     logger.info(f"Payment response: {payment_response}")
                     topic = f"device/receipt/{code}"
-                    amount_paid = 100
-                    payload = json.dumps({"receipt": payment_response, "paid": True, amount: amount})
+                    payment = await api_payment(payment_response, wallet.adminkey)
+                    amount_paid = payment['details'].amount
+                    valor_absoluto = abs(amount_paid) / 10000
+                    logger.info(f"Amount paid: {valor_absoluto}")
+                    payload = json.dumps({"receipt": payment_response, "paid": True, "balance": valor_absoluto})
                     self.client.publish(topic, payload=payload, qos=1, retain=False)
                 except Exception as e:
                     logger.info(str(e))
