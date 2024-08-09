@@ -180,9 +180,11 @@ class MQTTClient():
                             ec.ECDSA(hashes.SHA256())
                         )
                         if 'amount' in payload:
-                            asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
+                            asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
+                            # asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                         else:
-                            asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
+                            asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice))
+                            # asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                     except InvalidSignature:
                         logger.info("Invalid signature")
                 elif msg.topic.startswith("wallet/"):
