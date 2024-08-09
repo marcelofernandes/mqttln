@@ -119,7 +119,6 @@ class MQTTClient():
                 logger.info(f"Amount paid: {valor_absoluto}")
                 payload = json.dumps({"receipt": payment_response, "paid": True, "balance": valor_absoluto})
                 self.client.publish(topic, payload=payload, qos=1, retain=False)
-                return True
             
             async def handle_message_pay_invoice_lnurl(code, invoice, amount):
                 database = Database("database")
@@ -181,25 +180,8 @@ class MQTTClient():
                             ec.ECDSA(hashes.SHA256())
                         )
                         if 'amount' in payload:
-                            # loop = asyncio.new_event_loop()
-                            # asyncio.set_event_loop(loop)
-                            # futuro = asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']), loop)
-
-                            # try:
-                            #     resultado = futuro.result()  # Isso bloqueia até que o resultado esteja disponível
-                            #     logger.info(f"Resultado {resultado}")
-                            # except Exception as e:
-                            #     logger.info(f"Erro: {e}")
                             asyncio.run(handle_message_pay_invoice_lnurl(code, invoice, payload['amount']))
                         else:
-                            # loop = asyncio.new_event_loop()
-                            # asyncio.set_event_loop(loop)
-                            # futuro = asyncio.run_coroutine_threadsafe(handle_message_pay_invoice_lnbc(code, invoice), loop)
-                            # try:
-                            #     resultado = futuro.result()  # Isso bloqueia até que o resultado esteja disponível
-                            #     logger.info(f"Resultado {resultado}")
-                            # except Exception as e:
-                            #     logger.info(f"Erro: {e}")
                             asyncio.run(handle_message_pay_invoice_lnbc(code, invoice))
                     except InvalidSignature:
                         logger.info("Invalid signature")
@@ -224,7 +206,7 @@ class MQTTClient():
         self.client.username_pw_set(self.username, self.password)
         while not self.connected:
             try:
-                self.client.connect(self.broker, self.port, 6)
+                self.client.connect(self.broker, self.port, 60)
                 self.connected = True
             except ConnectionRefusedError as e:
                 logger.info(f"Erro de conexão: {e}. Tentando reconectar em 5 segundos...")
